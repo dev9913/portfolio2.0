@@ -1,0 +1,15 @@
+-- ALTER USER 'root'@'localhost' IDENTIFIED BY 'admin123';
+-- FLUSH PRIVILEGES;
+
+CREATE DATABASE IF NOT EXISTS portfolio_db;
+USE portfolio_db;
+
+CREATE TABLE IF NOT EXISTS messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  replied_message TEXT NULL,
+  date DATE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

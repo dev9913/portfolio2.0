@@ -1,0 +1,80 @@
+version: '3.7'
+
+services:
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "3000:80"
+    networks:
+      - portfolio
+    depends_on: 
+      - backend
+    restart: always
+
+  backend:
+    container_name: backend
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: "mysql"
+      DB_NAME: "portfolio_db"
+      DB_USER: "root"
+      DB_PASSWORD: "admin123"
+      EMAIL_USER: ""
+      EMAIL_PASS: ""
+      ADMIN_EMAIL: "" 
+    networks:
+      - portfolio
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+  admin:
+    container_name: admin
+    build: ./admin
+    ports:
+      - "5001:80"
+    environment:
+      DB_HOST: "mysql"
+      DB_NAME: "portfolio_db"
+      DB_USER: "root"
+      DB_PASSWORD: "admin123"
+      ADMIN_PASSWORD: "admin123"
+    networks:
+      - portfolio
+    volumes:
+      - ./admin:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    restart: always
+  
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - portfolio
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  myvolume:
+
+networks:
+  portfolio:
+    driver: bridge

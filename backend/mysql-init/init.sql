@@ -1,0 +1,38 @@
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'admin123';
+FLUSH PRIVILEGES;
+
+
+CREATE DATABASE IF NOT EXISTS portfolio_db;
+USE portfolio_db;
+
+CREATE TABLE IF NOT EXISTS messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  replied_message TEXT NULL,
+  date DATE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Trigger to set the default date to CURRENT_DATE
+DELIMITER //
+CREATE TRIGGER before_insert_message
+BEFORE INSERT ON messages
+FOR EACH ROW
+BEGIN
+  IF NEW.date IS NULL THEN
+    SET NEW.date = CURRENT_DATE;
+  END IF;
+END;
+//
+DELIMITER ;
+
+#CREATE TABLE IF NOT EXISTS users (
+ # id INT AUTO_INCREMENT PRIMARY KEY,
+#  username VARCHAR(100) NOT NULL,
+#  email VARCHAR(255) NOT NULL,
+ # password VARCHAR(255) NOT NULL,
+#  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+#);
+
