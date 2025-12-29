@@ -106,13 +106,13 @@ if (isset($_POST['send_reply'])) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';  // Use Gmail's SMTP server
         $mail->SMTPAuth = true;
-        $mail->Username = 'devjangig@gmail.com';  // Your Gmail email address
-        $mail->Password = 'kqhqrggjgsjudmxv';  // Use App Password here if 2FA is enabled
+        $mail->Username = getenv('SMTP_USERNAME');  // Your Gmail email address
+        $mail->Password = getenv('SMTP_PASSWORD'); // Use App Password here if 2FA is enabled
         $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;  // Use STARTTLS (Port 587)
         $mail->Port = 587;  // Recommended for TLS encryption with Gmail
         
         // Sender and recipient
-        $mail->setFrom('devjangig@gmail.com', 'Admin');
+        $mail->setFrom(getenv('SMTP_USERNAME'); , 'Admin');
         $mail->addAddress($msg['email'], $msg['name']);  // Send email to the user who contacted you
 
         // Email content
