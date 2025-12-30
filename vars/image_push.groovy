@@ -22,8 +22,6 @@ def call (String imgname, String tag, String username ){
 	} catch (Exception e) {
             println "Failed to push Docker image ${userName}/${imgName}:${tag}."
             throw e 
-        }
-    }		
-
+    }
   }
 }
