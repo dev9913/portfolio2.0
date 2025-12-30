@@ -1,0 +1,22 @@
+# ENVIROMENT VARIABLES 
+.env
+.env.*
+!.env.example 
+#=======================
+#PHP 
+#=======================
+vendor/
+*.log
+*.cache
+*.tmp
+#=======================
+#OS FILES
+#=======================
+.DS_storeThumbs.db
+
+#=======================
+# EDITOR / IDE
+#=======================
+.vscode/
+.idea/
+

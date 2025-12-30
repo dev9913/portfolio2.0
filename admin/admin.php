@@ -112,7 +112,7 @@ if (isset($_POST['send_reply'])) {
         $mail->Port = 587;  // Recommended for TLS encryption with Gmail
         
         // Sender and recipient
-        $mail->setFrom(getenv('SMTP_USERNAME'); , 'Admin');
+        $mail->setFrom(getenv('SMTP_USERNAME') , 'Admin');
         $mail->addAddress($msg['email'], $msg['name']);  // Send email to the user who contacted you
 
         // Email content

@@ -1,6 +1,3 @@
--- ALTER USER 'root'@'localhost' IDENTIFIED BY 'admin123';
--- FLUSH PRIVILEGES;
-
 CREATE DATABASE IF NOT EXISTS portfolio_db;
 USE portfolio_db;
 

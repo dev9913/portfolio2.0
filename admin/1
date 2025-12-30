@@ -1,5 +1,0 @@
-ENV DB_HOST=http://localhost:8000
-ENV DB_NAME=contact_app
-ENV DB_USER=root
-ENV DB_PASSWORD=StrongPassword123
-ENV ADMIN_PASSWORD=admin123
