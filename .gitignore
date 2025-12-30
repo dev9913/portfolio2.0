@@ -28,7 +28,7 @@ backend/vendor/
 #=======================
 #DB Backup 
 #=======================
-mysql-init/*.sql
+mysql-init/init.sql
 
 #=======================
 #OS FILES
