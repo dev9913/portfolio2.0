@@ -13,9 +13,7 @@ def call (String imgname, String tag, String username ){
             	    """
 
             	// Push Docker image
-            	    sh """
-                	docker push ${userName}/${imgName}:${tag}
-            	    """
+            	    sh "docker push ${userName}/${imgName}:${tag}"
 
             	println "Successfully pushed ${userName}/${imgName}:${tag} to Docker Hub."
         	
