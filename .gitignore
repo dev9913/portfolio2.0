@@ -1,5 +1,9 @@
 # ENVIROMENT VARIABLES 
 
+frontend/.env
+backend/.env
+admin/.env
+
 .env
 .env.*
 .env.example 
