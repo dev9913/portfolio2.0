@@ -13,7 +13,7 @@ const Contact = () => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
 
-    const API_URL = 'http://localhost:5000'; // Your backend URL
+    const API_URL = '/api'; // Your backend URL
     const formData = new FormData(e.target);
 
     try {
