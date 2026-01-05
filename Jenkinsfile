@@ -40,21 +40,21 @@ pipeline {
         stage('frontend image push'){
             steps{
                 script{
-                    image_push("portfolio-frontend", "${params.IMAGE_TAG}", "dev7878")
+                    image_push("portfolio-frontend", "${IMAGE_TAG}", "dev7878")
                 }
             }
         }
          stage('backend image push'){
             steps{
                 script{
-                    image_push("portfolio-backend", "${params.IMAGE_TAG}", "dev7878")
+                    image_push("portfolio-backend", "${IMAGE_TAG}", "dev7878")
                 }
             }
         }
          stage('admin image push'){
             steps{
                 script{
-                    image_push("portfolio-admin", "${params.IMAGE_TAG}", "dev7878")
+                    image_push("portfolio-admin", "${IMAGE_TAG}", "dev7878")
                 }
             }
         }
