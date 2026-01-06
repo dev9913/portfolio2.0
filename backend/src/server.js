@@ -45,9 +45,9 @@ app.post('/contact', upload.none(), (req, res) => {
 
   // Save form data to the database (immediate response)
   const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-  const query = 'INSERT INTO messages (name, email, message, date) VALUES (?, ?, ?, ?)';
+  const query = 'INSERT INTO messages (name, email, message) VALUES (?, ?, ?)';
 
-  db.execute(query, [name, email, message, date], (err, result) => {
+  db.execute(query, [name, email, message], (err, result) => {
     if (err) {
       console.error('Database Error:', err);
       return res.status(500).json({ status: 'error', message: 'Database error' });

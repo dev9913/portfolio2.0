@@ -1,4 +1,9 @@
 CREATE DATABASE IF NOT EXISTS portfolio_db;
+
+CREATE USER IF NOT EXISTS 'portfolio'@'%' IDENTIFIED BY 'admin123';
+GRANT ALL PRIVILEGES ON portfolio_db.* TO 'portfolio'@'%';
+FLUSH PRIVILEGES;
+
 USE portfolio_db;
 
 CREATE TABLE IF NOT EXISTS messages (
@@ -7,6 +12,6 @@ CREATE TABLE IF NOT EXISTS messages (
   email VARCHAR(255) NOT NULL,
   message TEXT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  replied_message TEXT NULL,
-  date DATE 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  replied_message TEXT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
