@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init-sql
+  namespace: portfolio
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS __MYSQL_DATABASE__;
+
+    CREATE USER IF NOT EXISTS '__MYSQL_USER__'@'%' IDENTIFIED BY '__MYSQL_USER_PASSWORD__';
+    GRANT ALL PRIVILEGES ON __MYSQL_DATABASE__.* TO '__MYSQL_USER__'@'%';
+    FLUSH PRIVILEGES;
+
+    USE __MYSQL_DATABASE__;
+
+    CREATE TABLE IF NOT EXISTS messages (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      message TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      replied_message TEXT NULL,
+      date DATE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mysql-init-job
+  namespace: portfolio
+spec:
+  ttlSecondsAfterFinished: 60
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mysql-init
+          image: mysql:5.7
+          env:
+            - name: DB_HOST   # HOST 
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_HOST
+              
+            - name: ROOT_PASSWORD  # DB PASS
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: MYSQL_ROOT_PASSWORD
+
+            - name: DB_NAME # DB NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_NAME
+
+            - name: DB_USER  # DB USER 
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: DB_USER
+
+            - name: DB_PASSWORD # DB USER PASS
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: init-sql
+              mountPath: /sql
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for MySQL..."
+              until mysql -h "$DB_HOST" -uroot -p"$ROOT_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; do
+                sleep 2
+              done
+
+              echo "Injecting secrets into SQL template..."
+              sed \
+                -e "s/__MYSQL_DATABASE__/$DB_NAME/g" \
+                -e "s/__MYSQL_USER__/$DB_USER/g" \
+                -e "s/__MYSQL_USER_PASSWORD__/$DB_PASSWORD/g" \
+                /sql/init.sql > /tmp/init.sql
+
+              echo "Running init.sql..."
+              mysql -h "$DB_HOST" -uroot -p"$ROOT_PASSWORD" < /tmp/init.sql
+      volumes:
+        - name: init-sql
+          configMap:
+            name: mysql-init-sql
+

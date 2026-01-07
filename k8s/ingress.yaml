@@ -24,7 +24,7 @@ spec:
             port: 
               number: 5000
       - pathType: Prefix
-        path: "/admin"
+        path: "/admin.php"
         backend:
           service:
             name: admin-svc

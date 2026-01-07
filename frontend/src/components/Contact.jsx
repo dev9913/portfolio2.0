@@ -13,17 +13,13 @@ const Contact = () => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
 
-    const API_URL = 'http://backend-svc:5000'; // Your backend URL
+    const API_URL = 'http://portfolio.local'; // Your backend URL
     const formData = new FormData(e.target);
 
     try {
-      // const res = await fetch(`${API_URL}/contact`, {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-      const res = await fetch(`/contact`, {
+       const res = await fetch(`${API_URL}/api/contact`, {
          method: 'POST',
-         body: formData,
+          body: formData,
        });
       const data = await res.json();  // Get the JSON response from the server
 

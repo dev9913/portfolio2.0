@@ -1,6 +1,8 @@
 import React from 'react';
-import devImage from '../devimg.jpeg'; 
-import devresume from '../Dev_Resume.pdf'; 
+// import devImage from '../devimg.jpeg'; 
+// import devresume from '../Dev_Resume.pdf'; 
+import  devresume from "../assets/Dev_Resume.pdf";
+import  devImage from "../assets/devimg.jpeg";
 
 const Hero = () => (
   <section id="home">

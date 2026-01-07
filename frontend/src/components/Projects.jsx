@@ -34,12 +34,6 @@ const Projects = () => (
         <span className="tools">Prometheus • Grafana • Alertmanager</span>
         <a href="https://github.com/dev9913/Proshop" className="project-btn" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
-      <div className="project-card">
-        <h3>Hello Dev</h3>
-        <p>ballu</p>
-        <span className="tools">Prometheus • Grafana • Alertmanager</span>
-        <a href="https://github.com/dev9913/Proshop" className="project-btn" target="_blank" rel="noopener noreferrer">GitHub</a>
-      </div>
     </div>
   </section>
 );

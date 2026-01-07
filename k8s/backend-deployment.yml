@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend 
-        image: dev7878/portfolio-backend:1.0
+        image: dev7878/portfolio-backend:latest
         envFrom:
           - configMapRef:
               name: db-config
@@ -31,4 +31,16 @@ spec:
           limits:
             cpu: 200m 
             memory: 256Mi  
-          
+        livenessProbe:
+          httpGet:
+            path: /contact
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 15
+
+        readinessProbe:
+          httpGet:
+            path: /contact
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10            

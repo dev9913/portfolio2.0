@@ -84,67 +84,6 @@ if (!isset($_SESSION['logged_in'])) {
     }
 }
 
-// ================= REPLY FUNCTIONALITY (with PHPMailer) =================
-
-if (isset($_POST['send_reply'])) {
-    $reply = $_POST['reply'];
-    $messageId = $_POST['message_id'];
-
-    // Get the original message data
-    $messageData = $pdo->prepare("SELECT * FROM messages WHERE id = ?");
-    $messageData->execute([$messageId]);
-    $msg = $messageData->fetch(PDO::FETCH_ASSOC);
-
-    // Update the database with the reply
-    $stmt = $pdo->prepare("UPDATE messages SET replied_message = ? WHERE id = ?");
-    $stmt->execute([$reply, $messageId]);
-
-    // Send the email reply using PHPMailer
-    $mail = new PHPMailer\PHPMailer\PHPMailer();
-    try {
-        // SMTP Configuration
-        $mail->isSMTP();
-        $mail->Host = '192.168.1.21';  // Use Gmail's SMTP server
-        $mail->SMTPAuth = true;
-        $mail->Username = getenv('SMTP_USERNAME');  // Your Gmail email address
-        $mail->Password = getenv('SMTP_PASSWORD'); // Use App Password here if 2FA is enabled
-        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;  // Use STARTTLS (Port 587)
-        $mail->Port = 25;  // Recommended for TLS encryption with Gmail
-        
-        // Sender and recipient
-        $mail->setFrom(getenv('SMTP_USERNAME') , 'Admin');
-        $mail->addAddress($msg['email'], $msg['name']);  // Send email to the user who contacted you
-
-        // Email content
-        $mail->isHTML(true);
-        $mail->Subject = 'Reply to Your Message from Admin';
-        $mail->Body    = "Hello " . $msg['name'] . ",<br><br>The admin has replied to your message:<br><br>" . nl2br(htmlspecialchars($reply)) . "<br><br>Best regards,<br>Admin";
-
-        // Send email
-        if ($mail->send()) {
-            // Set a session variable for success
-            $_SESSION['reply_success'] = true;
-
-            // Redirect back to the admin page
-            header("Location: admin.php"); // Redirect to reload the page
-            exit;  // Stop further execution
-        } else {
-            // If email sending fails
-            $error_message = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-            // Handle the error gracefully (e.g., log or display an error message)
-        }
-    } catch (Exception $e) {
-        // Catch any exceptions during sending
-        $error_message = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-        // Handle the error gracefully (e.g., log or display an error message)
-    }
-}
-
-
-
-
-
-
 // // Handle Delete Request
 if (isset($_POST['delete_message'])) {
     $messageId = $_POST['message_id'];
@@ -243,36 +182,11 @@ foreach ($messages as &$msg) {
                 <p><strong>Email:</strong> <?= htmlspecialchars($msg['email']) ?></p>
                 <p><strong>Message:</strong> <?= htmlspecialchars(substr($msg['message'], 0, 120)) ?>...</p>
                 <p><strong>Date:</strong> <?= htmlspecialchars($msg['formatted_date']) ?></p>
-                <p><strong>Reply:</strong> <?= htmlspecialchars($msg['replied_message'] ?? '') ?></p>
 
             </p>
                 <div class="d-flex justify-content-between">
-                    <!-- Reply Button -->
-                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#replyModal<?= $msg['id'] ?>">Reply</button>
-
                     <!-- Delete Button -->
                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $msg['id'] ?>">Delete</button>
-                </div>
-            </div>
-
-            <!-- Modal for replying -->
-            <div class="modal fade" id="replyModal<?= $msg['id'] ?>" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="replyModalLabel">Reply to <?= htmlspecialchars($msg['name']) ?></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="POST">
-                                <textarea name="reply" class="form-control" placeholder="Enter your reply here..." required></textarea>
-                                <input type="hidden" name="message_id" value="<?= $msg['id'] ?>">
-                                <div class="d-flex justify-content-end mt-3">
-                                    <button type="submit" name="send_reply" class="btn btn-primary btn-sm">Send Reply</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -319,16 +233,5 @@ foreach ($messages as &$msg) {
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Use JavaScript to hide the success message after 2 seconds
-    window.onload = function() {
-        var successMessage = document.getElementById("successMessage");
-        if (successMessage) {
-            setTimeout(function() {
-                successMessage.style.display = 'none'; // Hide the success message
-            }, 2000); // 2000 ms = 2 seconds
-        }
-    };
-</script>
 </body>
 </html>

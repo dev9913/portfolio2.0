@@ -1,6 +1,6 @@
 import React from 'react';
-import devImage from '../devops.avif'; 
-import devresume from '../Dev_Resume.pdf'; 
+import  devresume from "../assets/Dev_Resume.pdf";
+import  devImage from "../assets/devops.avif";
 const About = () => (
   <section id="about">
     <h2 className="section-title">About Me</h2>
