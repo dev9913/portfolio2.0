@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend 
-        image: dev7878/portfolio-backend:latest
+        image: dev7878/portfolio-backend:3.0
         envFrom:
           - configMapRef:
               name: db-config
