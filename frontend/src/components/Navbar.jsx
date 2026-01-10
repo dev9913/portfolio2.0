@@ -30,7 +30,7 @@ const Navbar = () => {
         <li>
           <a
             // href={`${process.env.REACT_APP_API_URL}/contact`}
-            href={`http://portfolio.local/api/contact`}
+            href={`http://portfolio.local/contact`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setIsOpen(false)}
