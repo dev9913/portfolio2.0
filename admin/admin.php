@@ -10,11 +10,6 @@ if (isset($_SESSION['reply_success']) && $_SESSION['reply_success']) {
     unset($_SESSION['reply_success']);
 }
 
-
-
-
-require 'vendor/autoload.php';  // Add PHPMailer autoload
-
 function loadEnv($file) {
     if (file_exists($file)) {
         $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
