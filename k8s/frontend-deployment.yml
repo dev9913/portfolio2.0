@@ -3,10 +3,6 @@ apiVersion: apps/v1
 metadata:
   name: frontend
   namespace: portfolio
-  annotations:
-    notifications.argoproj.io/subscribe.on-health-degraded.email: "devjangig@gmail.com"  
-    notifications.argoproj.io/subscribe.on-deployed.email: "devjangig@gmail.com" 
-
 spec:
   replicas: 1
   selector:
