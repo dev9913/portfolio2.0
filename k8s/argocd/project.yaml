@@ -1,0 +1,24 @@
+kind: AppProject
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: portfolio
+  namespace: agocd
+spec:
+  description: "This Project for my Portfolio ."
+  sourceRepos:
+    - https://github.com/dev9913/portfolio2.0.git
+  destinations:
+    - server: https://kubernetes.default.svc  # k8s cluste ip
+      namespace: portfolio
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  roles:
+    name: portfolio-admin
+    descriptions: "Role for Portfolio Proerct admin "
+    policies:
+      - p , proj:portfolio:portfolio-admi,applications,*.portfolio/*,allow 
+      

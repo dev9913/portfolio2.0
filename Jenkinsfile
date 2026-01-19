@@ -3,7 +3,7 @@ pipeline {
     agent {label "agentdev"}
     
     parameters {
-        string(name: 'IMAGE_TAG', defaultValue: '1.0', description: 'Docker image tag')
+        string(name: 'IMAGE_TAG', defaultValue: '1.0.0', description: 'Docker image tag')
     }
 
     stages {
@@ -55,6 +55,27 @@ pipeline {
             steps{
                 script{
                     image_push("portfolio-admin", "${IMAGE_TAG}", "dev7878")
+                }
+            }
+        }
+        stage("k8s frontend image update "){
+            steps{
+                script{
+                    image_update_k8s("frontend",${IMAGE_TAG})
+                }
+            }
+        }
+        stage("k8s backend image update "){
+            steps{
+                script{
+                    image_update_k8s("backend",${IMAGE_TAG})
+                }
+            }
+        }
+        stage("k8s admin image update "){
+            steps{
+                script{
+                    image_update_k8s("admin",${IMAGE_TAG})
                 }
             }
         }
