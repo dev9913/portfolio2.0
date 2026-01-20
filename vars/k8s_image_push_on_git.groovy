@@ -1,6 +1,6 @@
 def call(String imagename, String tag, String username) {
 
-    println "🔐 Pushing updated Kubernetes file to GitHub..."
+    println " Pushing updated Kubernetes file to GitHub..."
 
     withCredentials([
         string(credentialsId: 'email', variable: 'GIT_EMAIL'),
