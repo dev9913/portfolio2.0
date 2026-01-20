@@ -64,7 +64,7 @@ pipeline {
                    echo "Update Frontend-Image Tag..."
                    sh '''
 	                   yq -i e '.spec.template.spec.containers[0].image 
-					   |= sub(":.*"; ":${IMAGE_TAG}")' k8s/frontend-deployment.yml
+					   |= sub(":.*"; ":" + strenv(IMAGE_TAG))' k8s/frontend-deployment.yml
 
 	                 '''
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
@@ -77,7 +77,7 @@ pipeline {
                     echo "Update Backend-Image Tag..."
                     sh '''
 	                    yq -i e '.spec.template.spec.containers[0].image 
-					   |= sub(":.*"; ":${IMAGE_TAG}")' k8s/backend-deployment.yml
+					   |= sub(":.*"; ":" + strenv(IMAGE_TAG))' k8s/backend-deployment.yml
  
 	                 '''
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
@@ -91,7 +91,7 @@ pipeline {
                     echo "Update Admin-Image Tag..."
                     sh '''
 	                   yq -i e '.spec.template.spec.containers[0].image 
-					   |= sub(":.*"; ":${IMAGE_TAG}")' k8s/admin-deployment.yml
+					   |= sub(":.*";":" + strenv(IMAGE_TAG))' k8s/admin-deployment.yml
 	                 '''
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
