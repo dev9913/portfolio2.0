@@ -61,42 +61,44 @@ pipeline {
         stage("k8s frontend image update "){
             steps{
                 script{
-                   echo "Update Frontend-Image Tag..."
-                   sh '''
-	                   yq -i e '.spec.template.spec.containers[0].image 
-					   |= sub(":.*"; ":" + strenv(IMAGE_TAG))' k8s/frontend-deployment.yml
+        //            echo "Update Frontend-Image Tag..."
+        //            sh '''
+	       //             yq -i e '.spec.template.spec.containers[0].image 
+					   // |= sub(":.*"; ":" + strenv(IMAGE_TAG))' k8s/frontend-deployment.yml
 
-	                 '''
+	       //           '''
+					 image_update_k8s("frontend","${IMAGE_TAG}")
 					k8s_image_push_on_git("frontend","${IMAGE_TAG}","dev9913")
-                   echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
+                   // echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
         }
         stage("k8s backend image update "){
             steps{
                 script{
-                    echo "Update Backend-Image Tag..."
-                    sh '''
-	                    yq -i e '.spec.template.spec.containers[0].image 
-					   |= sub(":.*"; ":" + strenv(IMAGE_TAG))' k8s/backend-deployment.yml
+        //             echo "Update Backend-Image Tag..."
+        //             sh '''
+	       //              yq -i e '.spec.template.spec.containers[0].image 
+					   // |= sub(":.*"; ":" + strenv(IMAGE_TAG))' k8s/backend-deployment.yml
  
-	                 '''
+	       //           '''
+					 image_update_k8s("backend","${IMAGE_TAG}")
 					 k8s_image_push_on_git("backend","${IMAGE_TAG}","dev9913")
-                   echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
+                   //echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
         }
         stage("k8s admin image update "){
             steps{
                 script{
-                    // image_update_k8s("admin","${IMAGE_TAG}")
-                    echo "Update Admin-Image Tag..."
-                    sh '''
-	                   yq -i e '.spec.template.spec.containers[0].image 
-					   |= sub(":.*";":" + strenv(IMAGE_TAG))' k8s/admin-deployment.yml
-	                 '''
+                    image_update_k8s("admin","${IMAGE_TAG}")
+        //             echo "Update Admin-Image Tag..."
+        //             sh '''
+	       //             yq -i e '.spec.template.spec.containers[0].image 
+					   // |= sub(":.*";":" + strenv(IMAGE_TAG))' k8s/admin-deployment.yml
+	       //           '''
 					k8s_image_push_on_git("admin","${IMAGE_TAG}","dev9913")
-                   echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
+                   // echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
         }
