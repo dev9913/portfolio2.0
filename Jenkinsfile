@@ -61,21 +61,43 @@ pipeline {
         stage("k8s frontend image update "){
             steps{
                 script{
-                    image_update_k8s("frontend","${IMAGE_TAG}")
+                   echo "Update Frontend-Image Tag..."
+                   sh """
+	                    yq e -i  '.spec.template.spec.containers[] 
+                        | select(.name == "frontend") 
+                        | .image |= sub(":(.*)$"; ":${IMAGE_TAG}")' 
+                        k8s/frontend-deployment.yml   
+	                 """
+                   echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
         }
         stage("k8s backend image update "){
             steps{
                 script{
-                    image_update_k8s("backend","${IMAGE_TAG}")
+                    echo "Update Backend-Image Tag..."
+                    sh """
+	                    yq e -i  '.spec.template.spec.containers[] 
+                        | select(.name == "backend") 
+                        | .image |= sub(":(.*)$"; ":${IMAGE_TAG}")' 
+                        k8s/backend-deployment.yml   
+	                 """
+                   echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
         }
         stage("k8s admin image update "){
             steps{
                 script{
-                    image_update_k8s("admin","${IMAGE_TAG}")
+                    // image_update_k8s("admin","${IMAGE_TAG}")
+                    echo "Update Admin-Image Tag..."
+                    sh """
+	                    yq e -i  '.spec.template.spec.containers[] 
+                        | select(.name == "admin") 
+                        | .image |= sub(":(.*)$"; ":${IMAGE_TAG}")' 
+                        k8s/admin-deployment.yml   
+	                 """
+                   echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
         }
