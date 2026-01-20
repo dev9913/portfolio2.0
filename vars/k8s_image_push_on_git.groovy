@@ -12,8 +12,9 @@ def call(String imagename, String tag, String username) {
     ]) {
 
         try {
-            sh """
+           sh """
               set -e
+              set -x
 
               git config user.name "\$GIT_USER"
               git config user.email "\$GIT_EMAIL"
@@ -21,12 +22,9 @@ def call(String imagename, String tag, String username) {
               git status
               git add k8s/${imagename}-deployment.yml
               git commit -m "ci: update ${imagename} image to ${tag} [skip ci]" || true
-
               git push https://\$GIT_USER:\$GIT_TOKEN@github.com/${username}/portfolio2.0.git HEAD:main
+            
             """
-
-            println "Successfully pushed ${username}/${imagename}:${tag} to GitHub."
-
         } catch (Exception e) {
             println "Failed to push ${username}/${imagename}:${tag} to GitHub."
             throw e
