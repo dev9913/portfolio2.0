@@ -61,21 +61,21 @@ pipeline {
         stage("k8s frontend image update "){
             steps{
                 script{
-                    image_update_k8s("frontend",${IMAGE_TAG})
+                    image_update_k8s("frontend","${IMAGE_TAG}")
                 }
             }
         }
         stage("k8s backend image update "){
             steps{
                 script{
-                    image_update_k8s("backend",${IMAGE_TAG})
+                    image_update_k8s("backend","${IMAGE_TAG}")
                 }
             }
         }
         stage("k8s admin image update "){
             steps{
                 script{
-                    image_update_k8s("admin",${IMAGE_TAG})
+                    image_update_k8s("admin","${IMAGE_TAG}")
                 }
             }
         }
