@@ -1,6 +1,8 @@
-def call(String imagename, String tag,  String username) {
-    println "Login to the GIT-HUB !!"
-   withCredentials([
+def call(String imagename, String tag, String username) {
+
+    println "🔐 Pushing updated Kubernetes file to GitHub..."
+
+    withCredentials([
         string(credentialsId: 'email', variable: 'GIT_EMAIL'),
         usernamePassword(
             credentialsId: 'github-creds',
@@ -8,24 +10,26 @@ def call(String imagename, String tag,  String username) {
             passwordVariable: 'GIT_TOKEN'
         )
     ]) {
- 	try {
+
+        try {
             sh """
-            git config user.name "$GIT_USER"
-            git config user.email "$GIT_EMAIL"
+              set -e
 
-            git status
-            git add k8s/${imagename}-deployment.yml
-            git commit -m "ci: update ${imagename} image to ${tag}" || echo "Nothing to commit"
+              git config user.name "\$GIT_USER"
+              git config user.email "\$GIT_EMAIL"
 
-            git push https://${GIT_USER}:${GIT_TOKEN}@github.com/${username}/portfolio2.0.git HEAD:main
-          
-	   """
-            
+              git status
+              git add k8s/${imagename}-deployment.yml
+              git commit -m "ci: update ${imagename} image to ${tag} [skip ci]" || true
+
+              git push https://\$GIT_USER:\$GIT_TOKEN@github.com/${username}/portfolio2.0.git HEAD:main
+            """
+
             println "Successfully pushed ${username}/${imagename}:${tag} to GitHub."
+
         } catch (Exception e) {
-            println "Failed to push on github ${username}/${imagename}:${tag}."
+            println "Failed to push ${username}/${imagename}:${tag} to GitHub."
             throw e
         }
-	     
-     }
+    }
 }
