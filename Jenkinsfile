@@ -63,10 +63,9 @@ pipeline {
                 script{
                    echo "Update Frontend-Image Tag..."
                    sh '''
-	                    yq e -i  '.spec.template.spec.containers[] 
-                        | select(.name == "frontend") 
-                        | .image |= sub(":(.*)$"; ":${IMAGE_TAG}")' 
-                        k8s/frontend-deployment.yml   
+	                   yq -i e '.spec.template.spec.containers[0].image 
+					   |= sub(":.*"; ":${IMAGE_TAG}")' k8s/frontend-deployment.yml
+
 	                 '''
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
@@ -77,10 +76,9 @@ pipeline {
                 script{
                     echo "Update Backend-Image Tag..."
                     sh '''
-	                    yq e -i  '.spec.template.spec.containers[] 
-                        | select(.name == "backend") 
-                        | .image |= sub(":(.*)$"; ":${IMAGE_TAG}")' 
-                        k8s/backend-deployment.yml   
+	                    yq -i e '.spec.template.spec.containers[0].image 
+					   |= sub(":.*"; ":${IMAGE_TAG}")' k8s/backend-deployment.yml
+ 
 	                 '''
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
@@ -92,10 +90,8 @@ pipeline {
                     // image_update_k8s("admin","${IMAGE_TAG}")
                     echo "Update Admin-Image Tag..."
                     sh '''
-	                    yq e -i  '.spec.template.spec.containers[] 
-                        | select(.name == "admin") 
-                        | .image |= sub(":(.*)$"; ":${IMAGE_TAG}")' 
-                        k8s/admin-deployment.yml   
+	                   yq -i e '.spec.template.spec.containers[0].image 
+					   |= sub(":.*"; ":${IMAGE_TAG}")' k8s/admin-deployment.yml
 	                 '''
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
