@@ -67,6 +67,7 @@ pipeline {
 					   |= sub(":.*"; ":" + strenv(IMAGE_TAG))' k8s/frontend-deployment.yml
 
 	                 '''
+					k8s_image_push_on_git("frontend","${IMAGE_TAG}","dev9913")
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
@@ -80,6 +81,7 @@ pipeline {
 					   |= sub(":.*"; ":" + strenv(IMAGE_TAG))' k8s/backend-deployment.yml
  
 	                 '''
+					 k8s_image_push_on_git("backend","${IMAGE_TAG}","dev9913")
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
@@ -93,6 +95,7 @@ pipeline {
 	                   yq -i e '.spec.template.spec.containers[0].image 
 					   |= sub(":.*";":" + strenv(IMAGE_TAG))' k8s/admin-deployment.yml
 	                 '''
+					k8s_image_push_on_git("admin","${IMAGE_TAG}","dev9913")
                    echo "Successfully change  IMAGE-tag $IMAGE_TAG" 
                 }
             }
