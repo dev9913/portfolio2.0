@@ -12,7 +12,11 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.14"
     }
-  }
+    kind = {
+      source  = "tehcyx/kind"
+      version = "~> 0.9.0"
+    }
+ }
 
 }
 

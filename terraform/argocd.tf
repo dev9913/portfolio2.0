@@ -1,4 +1,4 @@
-resource "kubernetes_namespace_v1" "argocd_ns"{
+resource "kubernetes_namespace_v1" "project_ns"{
   metadata {
     name = var.argocd_Namespace
  }
@@ -15,7 +15,7 @@ resource "helm_release" "argocd" {
   wait = true
   
   depends_on = [
-    null_resource.install_k3s
+   kind_cluster.cluster
   ]
   
   set = [

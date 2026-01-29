@@ -4,7 +4,7 @@ metadata:
   name: portfolio-ingress
   namespace: portfolio
 spec:
-  ingressClassName: traefik
+  ingressClassName: nginx
   rules:
   - host:  'portfolio.local'
     http:
