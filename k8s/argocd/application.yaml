@@ -1,17 +1,17 @@
-kind: Applications
+kind: Application
 apiVersion: argoproj.io/v1alpha1
 metadata:
   name: portfolio
   namespace: argocd
 spec:
   project: portfolio
-  sourceRepo:
+  source:
     repoURL: https://github.com/dev9913/portfolio2.0.git
-    targertRevision: main
+    targetRevision: main
     path: k8s
-  destinations:
-    server :  https://kubernetes.default.svc  # Enter Your  Cluster IP .
-    namespace : portfolio
+  destination:
+    server:  https://kubernetes.default.svc  # Enter Your  Cluster IP .
+    namespace: portfolio
   syncPolicy:
     automated:
       prune: true
