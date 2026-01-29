@@ -2,7 +2,7 @@ kind: AppProject
 apiVersion: argoproj.io/v1alpha1
 metadata:
   name: portfolio
-  namespace: agocd
+  namespace: argocd
 spec:
   description: "This Project for my Portfolio ."
   sourceRepos:
@@ -17,8 +17,9 @@ spec:
     - group: "*"
       kind: "*"
   roles:
-    name: portfolio-admin
-    descriptions: "Role for Portfolio Proerct admin "
-    policies:
-      - p , proj:portfolio:portfolio-admi,applications,*.portfolio/*,allow 
-      
+    - name: portfolio-admin
+      description: "Role for Portfolio Project admin"
+      policies:
+        - p, proj:portfolio:portfolio-admin,applications,*.portfolio/*,allow
+
+
