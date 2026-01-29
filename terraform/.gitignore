@@ -1,0 +1,11 @@
+# Terraform runtime files
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform.tfstate.lock.info
+.terraform.lock.hcl
+# CLI config
+.terraformrc
+terraform.rc
+
