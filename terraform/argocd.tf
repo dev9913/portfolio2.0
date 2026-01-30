@@ -1,6 +1,6 @@
 resource "kubernetes_namespace_v1" "project_ns"{
   metadata {
-    name = var.argocd_Namespace
+    name = var.project_Namespace
  }
 }
 
@@ -9,7 +9,7 @@ resource "helm_release" "argocd" {
   name       = "argocd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
-  namespace = var.argocd_Namespace 
+  namespace  =  "argocd" 
   create_namespace = true
   timeout = 600
   wait = true

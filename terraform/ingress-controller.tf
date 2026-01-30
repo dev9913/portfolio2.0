@@ -5,34 +5,37 @@ resource "helm_release" "nginx_ingress" {
 
   namespace        = var.project_Namespace
   create_namespace = true
+
   depends_on = [
     kind_cluster.cluster,
     helm_release.argocd,
     kubernetes_namespace_v1.project_ns
-    
   ]
-  
+
   timeout = 300
   wait    = true
 
-  set {
-    name  = "service.type"
-    value = "NodePort"
-  }
-
-  set {
-    name  = "ingressClass"
-    value = "nginx"
-  }
-
-  set {
-    name  = "ingressClassResource.name"
-    value = "nginx"
-  }
-
-  set {
-    name  = "ingressClassResource.default"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "service.type"
+      value = "LoadBalancer"
+    },
+    {
+      name  = "ingressClass"
+      value = "nginx"
+    },
+    {
+      name  = "ingressClassResource.name"
+      value = "nginx"
+    },
+    {
+      name  = "ingressClassResource.default"
+      value = "true"
+    },
+    {
+      name  = "replicaCount"
+      value = "1"
+    }
+  ]
 }
 

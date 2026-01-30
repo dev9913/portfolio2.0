@@ -9,7 +9,12 @@ variable "cluster_name" {
 }
 
 variable "node_image" {
-  default = "node_image" 
+  default = "kindest/node:v1.29.2" 
+  type = string
+}
+
+variable "ingress_controller_name" {
+  default = "nginx-controller"
   type = string
 }
 
