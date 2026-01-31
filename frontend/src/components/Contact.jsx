@@ -13,7 +13,7 @@ const Contact = () => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
 
-    const API_URL = 'http://devopscloud.me/contact'; // Your backend URL
+    const API_URL = '/api/contact'; // Your backend URL
     const formData = new FormData(e.target);
 
     try {
