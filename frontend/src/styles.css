@@ -5,10 +5,14 @@ body {
     background: #1b1a17; /* warm charcoal */
     color: #e6e2d3;      /* sandstone off-white */
     overflow-x: hidden;
+    width: 100%; /* Ensure body takes full width */
+    box-sizing: border-box;
 }
 
 section {
     padding: 80px 8%;
+    width: 100%; /* Full width for sections */
+    box-sizing: border-box;
 }
 
 h1, h2, h3 {
@@ -31,12 +35,13 @@ h1, h2, h3 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; /* Full width */
-    padding: 20px 8%; /* Adjusted for centering content */
+    width: 100vw; /* Full viewport width to ensure no gaps */
+    padding: 20px 8%;
     z-index: 1000;
     backdrop-filter: blur(6px);
     border-bottom: 1px solid rgba(212, 163, 115, 0.15);
-    box-sizing: border-box; /* Ensure padding doesn't add extra width */
+    box-sizing: border-box;
+    margin: 0; /* Remove any default margins */
 }
 
 .navbar .logo {
@@ -78,9 +83,10 @@ h1, h2, h3 {
     justify-content: space-between;
     gap: 40px;
     min-height: 100vh; /* Full viewport height */
-    width: 100%; /* Full width */
-    padding: 100px 8%; /* Adjusted for full space while keeping content centered */
+    width: 100vw; /* Full viewport width */
+    padding: 100px 8%;
     box-sizing: border-box;
+    margin: 0; /* Ensure no margins */
 }
 
 .hero-content h1 {
@@ -145,6 +151,8 @@ h1, h2, h3 {
     background-color: #1b1b1b;
     color: #e6e2d3;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .about-wrapper {
@@ -385,12 +393,13 @@ h1, h2, h3 {
 
 /* ================= CONTACT ================= */
 #contact {
-    width: 100%; /* Full width */
-    padding: 60px 8%; /* Adjusted for full space while keeping content centered */
+    width: 100vw; /* Full viewport width */
+    padding: 60px 8%;
     background-color: #1b1b1b;
     color: #e6e2d3;
     text-align: center;
     box-sizing: border-box;
+    margin: 0; /* Ensure no margins */
 }
 
 .section-title {
@@ -482,12 +491,20 @@ h1, h2, h3 {
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
+    body {
+        width: 100vw; /* Ensure full width on mobile */
+        overflow-x: hidden;
+    }
+
     section {
         padding: 60px 6%;
+        width: 100vw; /* Full width on mobile */
+        box-sizing: border-box;
     }
 
     /* NAVBAR */
     .navbar {
+        width: 100vw; /* Full width on mobile */
         padding: 15px 6%;
     }
 
@@ -517,10 +534,9 @@ h1, h2, h3 {
 
     /* HERO */
     #home {
-        flex-direction: column;
-        text-align: center;
-        gap: 25px;
-        padding: 80px 6%; /* Adjusted for mobile */
+        width: 100vw; /* Full width on mobile */
+        padding: 80px 6%;
+        min-height: 100vh; /* Full height on mobile */
     }
 
     .hero-content h1 {
@@ -540,6 +556,11 @@ h1, h2, h3 {
     }
 
     /* ABOUT */
+    #about {
+        width: 100vw; /* Full width on mobile */
+        padding: 60px 6%;
+    }
+
     .about-wrapper {
         flex-direction: column;
         gap: 30px;
@@ -551,12 +572,12 @@ h1, h2, h3 {
 
     /* SKILLS */
     .skills-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Adjusted for better mobile fit */
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 15px;
     }
 
     .skill-icon {
-        font-size: 2.5rem; /* From later addition */
+        font-size: 2.5rem;
     }
 
     .skill-bar {
@@ -583,7 +604,8 @@ h1, h2, h3 {
 
     /* CONTACT */
     #contact {
-        padding: 60px 6%; /* Adjusted for mobile */
+        width: 100vw; /* Full width on mobile */
+        padding: 60px 6%;
     }
 
     .contact-wrapper {
