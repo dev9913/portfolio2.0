@@ -14,23 +14,33 @@ const Navbar = () => {
 
   return (
     <header className={`navbar ${scrolled ? "scrolled" : ""}`}>
+      {/* Logo */}
       <div className="logo">
         DevOps<span>Engineer</span>
       </div>
 
+      {/* Navigation Links */}
       <ul className={`nav-links ${isOpen ? "open" : ""}`}>
         {navItems.map((item) => (
           <li key={item}>
-            <a href={`#${item}`} onClick={() => setIsOpen(false)}>
+            <a
+              href={`#${item}`}
+              onClick={() => setIsOpen(false)}
+            >
               {item.charAt(0).toUpperCase() + item.slice(1)}
             </a>
           </li>
         ))}
 
+        {/* External Contact Link */}
         <li>
           <a
+<<<<<<< HEAD
             // href={`${process.env.REACT_APP_API_URL}/contact`}
             href={`/api/contact`}
+=======
+            href="/api/contact"
+>>>>>>> 1a57c139 (update files)
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setIsOpen(false)}
@@ -40,9 +50,14 @@ const Navbar = () => {
         </li>
       </ul>
 
-      <div className="menu-toggle" onClick={() => setIsOpen(!isOpen)}>
+      {/* Mobile Toggle */}
+      <button
+        className="menu-toggle"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle navigation"
+      >
         ☰
-      </div>
+      </button>
     </header>
   );
 };

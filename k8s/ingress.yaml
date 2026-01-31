@@ -17,7 +17,11 @@ spec:
             port: 
               number: 80
       - pathType: Prefix
+<<<<<<< HEAD
         path: "/api"
+=======
+        path: /api(/|$)(.*)
+>>>>>>> 1a57c139 (update files)
         backend:
           service:
             name: backend-svc

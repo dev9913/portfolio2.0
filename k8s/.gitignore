@@ -1,2 +1,3 @@
 secret.yml
 sealed-secret-key-backup.yaml
+sealed-secrets-key-backup.yaml

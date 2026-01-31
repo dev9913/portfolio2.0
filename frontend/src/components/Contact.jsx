@@ -13,7 +13,11 @@ const Contact = () => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
 
+<<<<<<< HEAD
     const API_URL = '/api/contact'; // Your backend URL
+=======
+    const API_URL = '/api'; // Your backend URL
+>>>>>>> 1a57c139 (update files)
     const formData = new FormData(e.target);
 
     try {
@@ -90,22 +94,65 @@ const Contact = () => {
             <button type="submit" className="btn-submit">Send Message</button>
           </form>
         </div>
-        <div className="contact-info">
-          <h3>Get in Touch</h3>
-          <ul>
-            <li><strong>Email:</strong> <a href="mailto:devjangig@gmail.com">devjangig@gmail.com</a></li>
-            <li><strong>Phone:</strong> <a href="tel:+911234567890">+91 1234567890</a></li>
-            <li><strong>GitHub:</strong> <a href="https://github.com/dev9913" target="_blank" rel="noopener noreferrer">github.com/dev9913</a></li>
-            <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/dev-jangir-a7a8692b9" target="_blank" rel="noopener noreferrer">linkedin.com/in/dev-jangir</a></li>
-          </ul>
-           <div className="social-links">
-            <a href="https://github.com/dev9913" target="_blank" rel="noreferrer"><img src={githubIcon} alt="GitHub" /></a>
-            <a href="https://www.linkedin.com/in/dev-jangir-a7a8692b9" target="_blank" rel="noreferrer"><img src={linkedinIcon} alt="LinkedIn" /></a>
-            <a href="https://twitter.com/" target="_blank" rel="noreferrer"><img src={twitterIcon} alt="Twitter" /></a>
-            <a href="https://instagram.com/" target="_blank" rel="noreferrer"><img src={instagramIcon} alt="Instagram" /></a>
+        
+        <div className="contact-container">
+  <div className="contact-info">
+    <h3>Get in Touch</h3>
 
-          </div>
-        </div>
+    <ul className="contact-list">
+      <li>
+        <strong>Email:</strong>
+        <a href="mailto:devjangig@gmail.com">devjangig@gmail.com</a>
+      </li>
+
+      <li>
+        <strong>Phone:</strong>
+        <a href="tel:+911234567890">+91 1234567890</a>
+      </li>
+
+      <li>
+        <strong>GitHub:</strong>
+        <a
+          href="https://github.com/dev9913"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          github.com/dev9913
+        </a>
+      </li>
+
+      <li>
+        <strong>LinkedIn:</strong>
+        <a
+          href="https://www.linkedin.com/in/dev-jangir-a7a8692b9"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          linkedin.com/in/dev-jangir
+        </a>
+      </li>
+    </ul>
+
+    <div className="social-links">
+      <a href="https://github.com/dev9913" target="_blank" rel="noreferrer">
+        <img src={githubIcon} alt="GitHub" />
+      </a>
+
+      <a href="https://www.linkedin.com/in/dev-jangir-a7a8692b9" target="_blank" rel="noreferrer">
+        <img src={linkedinIcon} alt="LinkedIn" />
+      </a>
+
+      <a href="https://twitter.com/" target="_blank" rel="noreferrer">
+        <img src={twitterIcon} alt="Twitter" />
+      </a>
+
+      <a href="https://instagram.com/" target="_blank" rel="noreferrer">
+        <img src={instagramIcon} alt="Instagram" />
+      </a>
+    </div>
+  </div>
+</div>
+
         
       </div>
     </section>

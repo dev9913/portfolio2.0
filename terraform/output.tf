@@ -14,3 +14,7 @@ output "argocd_admin_password" {
   sensitive   = true
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1a57c139 (update files)
