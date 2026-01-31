@@ -30,10 +30,13 @@ h1, h2, h3 {
     background: rgba(27, 26, 23, 0.9);
     display: flex;
     justify-content: space-between;
-    padding: 20px 8%;
+    align-items: center;
+    width: 100%; /* Full width */
+    padding: 20px 8%; /* Adjusted for centering content */
     z-index: 1000;
     backdrop-filter: blur(6px);
     border-bottom: 1px solid rgba(212, 163, 115, 0.15);
+    box-sizing: border-box; /* Ensure padding doesn't add extra width */
 }
 
 .navbar .logo {
@@ -74,7 +77,10 @@ h1, h2, h3 {
     align-items: center;
     justify-content: space-between;
     gap: 40px;
-    padding-top: 100px;
+    min-height: 100vh; /* Full viewport height */
+    width: 100%; /* Full width */
+    padding: 100px 8%; /* Adjusted for full space while keeping content centered */
+    box-sizing: border-box;
 }
 
 .hero-content h1 {
@@ -379,10 +385,12 @@ h1, h2, h3 {
 
 /* ================= CONTACT ================= */
 #contact {
-    padding: 60px 20px;
+    width: 100%; /* Full width */
+    padding: 60px 8%; /* Adjusted for full space while keeping content centered */
     background-color: #1b1b1b;
     color: #e6e2d3;
     text-align: center;
+    box-sizing: border-box;
 }
 
 .section-title {
@@ -512,6 +520,7 @@ h1, h2, h3 {
         flex-direction: column;
         text-align: center;
         gap: 25px;
+        padding: 80px 6%; /* Adjusted for mobile */
     }
 
     .hero-content h1 {
@@ -573,6 +582,10 @@ h1, h2, h3 {
     }
 
     /* CONTACT */
+    #contact {
+        padding: 60px 6%; /* Adjusted for mobile */
+    }
+
     .contact-wrapper {
         flex-direction: column;
     }
