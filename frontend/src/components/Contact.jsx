@@ -13,11 +13,11 @@ const Contact = () => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
 
-    const API_URL = 'http://devopscloud.me'; // Your backend URL
+    const API_URL = 'http://devopscloud.me/contact'; // Your backend URL
     const formData = new FormData(e.target);
 
     try {
-       const res = await fetch(`${API_URL}/contact`, {
+       const res = await fetch(`${API_URL}`, {
          method: 'POST',
           body: formData,
        });
