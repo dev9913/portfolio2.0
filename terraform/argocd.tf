@@ -14,10 +14,6 @@ resource "helm_release" "argocd" {
   timeout = 600
   wait = true
   
-  depends_on = [
-   kind_cluster.cluster
-  ]
-  
   set = [
     {
       name  = "service.type"
