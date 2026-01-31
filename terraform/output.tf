@@ -14,12 +14,3 @@ output "argocd_admin_password" {
   sensitive   = true
 }
 
-output "kubeconfig" {
-  value     = kind_cluster.cluster.kubeconfig
-  sensitive = true
-}
-
-output "endpoint" {
-  value = kind_cluster.cluster.endpoint
-  
-}
