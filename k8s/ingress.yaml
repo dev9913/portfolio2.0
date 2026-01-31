@@ -4,7 +4,7 @@ metadata:
   name: portfolio-ingress
   namespace: portfolio
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
   - host:  'devopscloud.me'
     http:
