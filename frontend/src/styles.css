@@ -35,7 +35,6 @@ h1, h2, h3 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-<<<<<<< HEAD
     width: 100vw; /* Full viewport width to ensure no gaps */
     padding: 20px 8%;
     z-index: 1000;
@@ -43,14 +42,14 @@ h1, h2, h3 {
     border-bottom: 1px solid rgba(212, 163, 115, 0.15);
     box-sizing: border-box;
     margin: 0; /* Remove any default margins */
-=======
+
     padding: 15px 5%;
     z-index: 1000;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(212, 163, 115, 0.2);
     width: 100%;
     box-sizing: border-box;
->>>>>>> 1a57c139 (update files)
+
 }
 
 .navbar .logo {
@@ -98,7 +97,6 @@ h1, h2, h3 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-<<<<<<< HEAD
     gap: 40px;
     min-height: 100vh; /* Full viewport height */
     width: 100vw; /* Full viewport width */
@@ -113,7 +111,6 @@ h1, h2, h3 {
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-=======
     gap: 20px;
     padding-top: 10px;
     min-height: 40vh;
@@ -130,7 +127,6 @@ h1, h2, h3 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 10px;
->>>>>>> 1a57c139 (update files)
 }
 
 .hero-content h2 {
@@ -254,12 +250,9 @@ h1, h2, h3 {
     background-color: #1b1b1b;
     color: #e6e2d3;
     text-align: center;
-<<<<<<< HEAD
     width: 100%;
     box-sizing: border-box;
-=======
     padding: 60px 5%;
->>>>>>> 1a57c139 (update files)
 }
 
 .about-wrapper {
@@ -360,7 +353,7 @@ h1, h2, h3 {
 }
 
 /* ================= SKILLS ================= */
-<<<<<<< HEAD
+
 .skills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -424,7 +417,7 @@ h1, h2, h3 {
 .skill-icon {
     font-size: 2rem;
     margin-bottom: 8px;
-=======
+
 #skills {
   padding: 80px 5%;
   background: linear-gradient(135deg, #1b1a17 0%, #242320 100%);
@@ -605,7 +598,6 @@ h1, h2, h3 {
   .section-title {
     font-size: 2rem;
   }
->>>>>>> 1a57c139 (update files)
 }
 
 @media (max-width: 480px) {
@@ -729,7 +721,7 @@ h1, h2, h3 {
 }
 
 #contact {
-<<<<<<< HEAD
+
     width: 100vw; /* Full viewport width */
     padding: 60px 8%;
     background-color: #1b1b1b;
@@ -737,12 +729,12 @@ h1, h2, h3 {
     text-align: center;
     box-sizing: border-box;
     margin: 0; /* Ensure no margins */
-=======
+
   background-color: #1b1b1b;
   color: #e6e2d3;
   text-align: center;
   padding: 60px 5%;
->>>>>>> 1a57c139 (update files)
+
 }
 
 .section-title {
@@ -1088,7 +1080,7 @@ h1, h2, h3 {
     box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
 
-<<<<<<< HEAD
+
 /* CONTACT.JS ANIMATIONS */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
@@ -1109,7 +1101,7 @@ h1, h2, h3 {
 
 .social-links img:hover {
     transform: scale(1.1);
-=======
+
 
 
 @media (max-width: 768px) {
@@ -1252,5 +1244,4 @@ h1, h2, h3 {
 .skill-percent {
   font-weight: 600;
   color: var(--accent-soft);
->>>>>>> 1a57c139 (update files)
 }
