@@ -13,11 +13,8 @@ const Contact = () => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
 
-<<<<<<< HEAD
+
     const API_URL = '/api/contact'; // Your backend URL
-=======
-    const API_URL = '/api'; // Your backend URL
->>>>>>> 1a57c139 (update files)
     const formData = new FormData(e.target);
 
     try {
