@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: admin
-          image: dev7878/portfolio-admin:1.0.0
+          image: dev7878/portfolio-admin:2.0.0
           envFrom:
             - configMapRef:
                 name: db-config
