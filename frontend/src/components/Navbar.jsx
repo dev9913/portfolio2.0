@@ -35,12 +35,8 @@ const Navbar = () => {
         {/* External Contact Link */}
         <li>
           <a
-<<<<<<< HEAD
             // href={`${process.env.REACT_APP_API_URL}/contact`}
-            href={`/api/contact`}
-=======
             href="/api/contact"
->>>>>>> 1a57c139 (update files)
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setIsOpen(false)}
