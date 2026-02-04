@@ -3,3 +3,18 @@ variable "project_Namespace"{
   type = string
 }
 
+variable "vault_bootstrap_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "app_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "db_root_password" {
+  type      = string
+  sensitive = true
+}
+

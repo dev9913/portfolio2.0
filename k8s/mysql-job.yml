@@ -22,6 +22,7 @@ data:
       replied_message TEXT NULL,
       date DATE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 ---
 
 apiVersion: batch/v1
@@ -33,51 +34,55 @@ spec:
   ttlSecondsAfterFinished: 60
   backoffLimit: 3
   template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
+        vault.hashicorp.com/role: "k8s-role"
+        vault.hashicorp.com/agent-inject-secret-env: "secret/data/creds"
+        vault.hashicorp.com/agent-inject-template-env: |
+          {{- with secret "secret/data/creds" -}}
+          export DB_PASSWORD="{{ .Data.data.password }}"
+          export DB_USER="{{ .Data.data.user }}"
+          export ROOT_PASSWORD="{{ .Data.data.root_password }}"
+          {{- end }}
     spec:
+      serviceAccountName: vault-admin
       restartPolicy: OnFailure
       containers:
         - name: mysql-init
           image: mysql:5.7
+          volumeMounts:
+            - name: init-sql
+              mountPath: /sql
           env:
-            - name: DB_HOST   # HOST 
+            - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
                   name: db-config
                   key: DB_HOST
-              
-            - name: ROOT_PASSWORD  # DB PASS
-              valueFrom:
-                secretKeyRef:
-                  name: portfolio-secret
-                  key: MYSQL_ROOT_PASSWORD
-
-            - name: DB_NAME # DB NAME
+            - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
                   name: db-config
                   key: DB_NAME
-
-            - name: DB_USER  # DB USER 
-              valueFrom:
-                secretKeyRef:
-                  name: portfolio-secret
-                  key: DB_USER
-
-            - name: DB_PASSWORD # DB USER PASS
-              valueFrom:
-                secretKeyRef:
-                  name: portfolio-secret
-                  key: DB_PASSWORD
-          volumeMounts:
-            - name: init-sql
-              mountPath: /sql
           command:
             - sh
             - -c
             - |
-              echo "Waiting for MySQL..."
-              until mysql -h "$DB_HOST" -uroot -p"$ROOT_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; do
+              # Load Vault secrets
+              source /vault/secrets/env
+
+              echo "Waiting for MySQL at $DB_HOST..."
+
+              timeout=60
+              while ! mysql -h "$DB_HOST" -uroot -p"$ROOT_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; do
                 sleep 2
+                timeout=$((timeout-2))
+                if [ $timeout -le 0 ]; then
+                  echo "MySQL not reachable. Exiting."
+                  exit 1
+                fi
               done
 
               echo "Injecting secrets into SQL template..."
@@ -89,8 +94,8 @@ spec:
 
               echo "Running init.sql..."
               mysql -h "$DB_HOST" -uroot -p"$ROOT_PASSWORD" < /tmp/init.sql
+
       volumes:
         - name: init-sql
           configMap:
             name: mysql-init-sql
-

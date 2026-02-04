@@ -12,15 +12,34 @@ spec:
     metadata:
       labels:
         app: admin
+      annotations:
+         vault.hashicorp.com/agent-inject: "true"
+         vault.hashicorp.com/role: "k8s-role" 
+         vault.hashicorp.com/agent-inject-secret-env: "secret/data/creds"
+         vault.hashicorp.com/agent-inject-template-env: |
+            {{- with secret "secret/data/creds" -}}
+            DB_PASSWORD="{{ .Data.data.password }}"
+            DB_USER="{{ .Data.data.user }}"
+            MYSQL_ROOT_PASSWORD="{{ .Data.data.root_password }}"
+            {{- end }}
     spec:
+      serviceAccountName: vault-admin
       containers:
         - name: admin
           image: dev7878/portfolio-admin:2.0.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Loading Vault secrets..."
+              set -a
+              . /vault/secrets/env
+              set +a
+              printenv | grep DB_
+              exec apache2-foreground
+
           envFrom:
             - configMapRef:
                 name: db-config
-            - secretRef:
-                name: portfolio-secret
           ports:
             - containerPort: 80
           resources:

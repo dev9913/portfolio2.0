@@ -12,15 +12,29 @@ spec:
     metadata:
       labels:
         app: backend
+      annotations:
+         vault.hashicorp.com/agent-inject: "true"
+         vault.hashicorp.com/role: "k8s-role" 
+         vault.hashicorp.com/agent-inject-secret-env: "secret/data/creds"
+         vault.hashicorp.com/agent-inject-template-env: |
+            {{- with secret "secret/data/creds" -}}
+            export DB_PASSWORD="{{ .Data.data.password }}"
+            export DB_USER="{{ .Data.data.user }}"
+            export MYSQL_ROOT_PASSWORD="{{ .Data.data.root_password }}"
+            {{- end }}
     spec:
+      serviceAccountName: vault-admin
       containers:
         - name: backend
           image: dev7878/portfolio-backend:2.0.0
+          imagePullPolicy: Always
+          command: ["sh", "-c"]
+          args:
+            - source /vault/secrets/env && node src/server.js
+
           envFrom:
             - configMapRef:
-                name: db-config
-            - secretRef:
-                name: portfolio-secret
+                name: db-config   
           ports:
             - containerPort: 5000
           resources:

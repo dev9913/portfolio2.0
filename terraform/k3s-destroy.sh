@@ -21,7 +21,7 @@ sudo systemctl stop k3s || true
 
 echo "Removing K3S..."
 /usr/local/bin/k3s-uninstall.sh
-/usr/local/bin/k3s-agent-uninstall.sh
+
 echo "K3S removed successfully"
 
 

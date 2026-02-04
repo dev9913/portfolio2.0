@@ -6,137 +6,158 @@
     <title>Contact Us</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* General styles */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f1f6;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+      :root {
+    --accent: #d4a373;        /* clay / warm tan */
+    --accent-soft: #b7c4a0;   /* sage green */
+    --bg-card: #242320;       /* dark warm taupe */
+    --bg-soft: #1f1e1b;
+    --text-main: #e6e2d3;     /* soft sandstone */
+    --text-muted: #bdb8aa;
+    --border-soft: #3a3935;
+}
+    body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-soft);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
 
-        .container {
-            background-color: #fff;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 650px;
-            padding: 40px 50px;
-            border-radius: 12px;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease-in-out;
-        }
+.container {
+    background-color: var(--bg-card);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+    width: 100%;
+    max-width: 650px;
+    padding: 40px 50px;
+    border-radius: 14px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease-in-out;
+}
 
-        .container h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #333;
-            font-weight: 600;
-        }
+/* Headings */
+.container h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: var(--accent);
+    font-weight: 600;
+}
 
-        .form-group {
-            margin-bottom: 25px;
-            text-align: left;
-        }
+/* Form */
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
 
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 8px;
-        }
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
 
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            box-sizing: border-box;
-            transition: border 0.3s ease-in-out;
-        }
+/* Inputs */
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.05rem;
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    background-color: #2b2a26;
+    color: var(--text-main);
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+}
 
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: #7e57c2;
-            outline: none;
-        }
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #8f8a7b;
+}
 
-        .form-group textarea {
-            resize: vertical;
-            height: 150px;
-        }
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(212, 163, 115, 0.25);
+}
 
-        .btn-submit {
-            padding: 14px 30px;
-            background-color: #7e57c2;
-            color: #fff;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease-in-out;
-        }
+.form-group textarea {
+    resize: vertical;
+    height: 150px;
+}
 
-        .btn-submit:hover {
-            background-color: #5e35b1;
-            transform: translateY(-2px);
-        }
+/* Button */
+.btn-submit {
+    padding: 14px 32px;
+    background-color: var(--accent);
+    color: #1f1e1b;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(212, 163, 115, 0.35);
+    transition: all 0.3s ease-in-out;
+}
 
-        .btn-submit:active {
-            background-color: #512da8;
-            transform: translateY(2px);
-        }
+.btn-submit:hover {
+    background-color: var(--accent-soft);
+    transform: translateY(-2px);
+}
 
-        .message {
-            font-size: 1.1rem;
-            margin-top: 20px;
-            display: block;
-        }
+.btn-submit:active {
+    transform: translateY(1px);
+}
 
-        .message.success {
-            color: #4caf50;
-        }
+/* Messages */
+.message {
+    font-size: 1.05rem;
+    margin-top: 20px;
+}
 
-        .message.error {
-            color: #f44336;
-        }
+.message.success {
+    color: var(--accent-soft);
+}
 
-        .thank-you-message {
-            font-size: 1.4rem;
-            color: #333;
-            margin-top: 30px;
-        }
+.message.error {
+    color: #e07a5f;
+}
 
-        /* Animation */
-        .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
-        }
+.thank-you-message {
+    font-size: 1.4rem;
+    color: var(--accent);
+    margin-top: 30px;
+}
 
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+/* Animation */
+.fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 30px;
-            }
-        }
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .container {
+        padding: 30px;
+    }
+}
+ 
     </style>
 </head>
 <body>
 
     <div class="container fade-in">
         <h2>Contact Us</h2>
-        <form id="contactForm" action="/contact" method="POST">
+        <form id="contactForm" action="/api/contact" method="POST">
             <div class="form-group">
                 <label for="name">Your Name</label>
                 <input type="text" name="name" id="name" placeholder="Enter your name" required>
@@ -171,7 +192,7 @@
             const formData = new FormData(form);  // Create FormData object with form data
 
             // Send form data to server
-            fetch('/contact', {
+            fetch('/api/contact', {
                 method: 'POST',
                 body: formData  // Send FormData directly
             })
@@ -190,7 +211,7 @@
                             countdownElement.textContent = countdown;
                             if (countdown <= 0) {
                                 clearInterval(countdownInterval);
-                                window.location.href = '/contact';  // Redirect to homepage or another URL
+                                window.location.href = '/api/contact';  // Redirect to homepage or another URL
                             }
                         }, 1000);  // Update every second
                     } else {

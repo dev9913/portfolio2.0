@@ -1,6 +1,13 @@
 #!/bin/bash
-
 set -e
+
+echo "=============================="
+echo " Updating system packages"
+echo "=============================="
+sudo apt update -y
+sudo apt install -y curl zip unzip ca-certificates
+
+
 
 # ======== DOCKER INSTALLATION ============
 
@@ -18,65 +25,70 @@ sudo systemctl start docker
 echo "Setting Docker permissions..."
 
 sudo usermod -aG docker $USER
-newgrp docker
+sudo newgrp docker
 
 echo "Restarting Docker..."
 sudo systemctl restart docker
-
 echo "Docker installed successfully!"
 
 
-# ======== KUBECTL  INSTALLATION ============
 
-echo " Installing kubectl "
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"   
 
-echo "Enable Kubectl..."
-chmod +x ./kubectl   
-sudo mv ./kubectl /usr/local/bin/kubectl   
 
-echo " Successfull Install Kubectl !!"
-sleep 15s
+# ======== KUBECTL INSTALLATION ============
 
-# ======== Helm  INSTALLATION ============
+echo "=============================="
+echo " Installing kubectl"
+echo "=============================="
 
-echo "Installing Helm..."
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
+KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
 
-echo "Configure Helm..."
+curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+kubectl version --client
+echo " kubectl installed successfully!"
+sleep 5
+
+# ======== HELM INSTALLATION ============
+
+echo "=============================="
+echo " Installing Helm"
+echo "=============================="
+
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 chmod 700 get_helm.sh
-./get_helm.sh
-echo " Helm installed successfully!"
+sudo ./get_helm.sh
+rm -f get_helm.sh
 
+helm version
+echo " Helm installed successfully!"
 
 # ======== K3S INSTALLATION ============
 
+echo "=============================="
+echo " Installing K3s"
+echo "=============================="
 
-echo " Installing required tools..."
-sudo apt update
-sudo apt install -y curl zip unzip
-
-echo " Installing K3s..."
 curl -sfL https://get.k3s.io | sh -
 
 echo " Waiting for K3s to be ready..."
 sleep 15
 
-echo " Configuring kubeconfig..."
+# ======== KUBECONFIG SETUP ============
+
+echo "=============================="
+echo " Configuring kubeconfig"
+echo "=============================="
+
 mkdir -p $HOME/.kube
 sudo k3s kubectl config view --raw > $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
 chmod 600 $HOME/.kube/config
 
-echo " K3s installed successfully!"
+export KUBECONFIG=$HOME/.kube/config
 
-
-# ======== KUBESEAL INSTALLATION ============
-
-echo " Installing Kubeseal..."
-wget https://github.com/bitnami-labs/sealed-secrets/releases/latest/download/kubeseal-linux-amd64
-echo " Configuring kubeseal..."
-sudo install -m 755 kubeseal-linux-amd64 /usr/local/bin/kubeseal
-echo " Kubeseal installed successfully!"
-
-
+kubectl get nodes
+echo " K3s installed and kubectl configured!"
 

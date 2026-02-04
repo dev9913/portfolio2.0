@@ -10,12 +10,12 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navItems = ["home", "about", "projects", "skills", "experience"];
+  const navItems = ["hero", "about", "projects", "skills", "experience"];
 
   return (
     <header className={`navbar ${scrolled ? "scrolled" : ""}`}>
       {/* Logo */}
-      <div className="logo">
+      <div className="logo" >
         DevOps<span>Engineer</span>
       </div>
 
@@ -45,7 +45,7 @@ const Navbar = () => {
           </a>
         </li>
       </ul>
-
+      
       {/* Mobile Toggle */}
       <button
         className="menu-toggle"
@@ -59,3 +59,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

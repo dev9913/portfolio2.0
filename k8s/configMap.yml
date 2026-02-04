@@ -4,7 +4,7 @@ metadata:
   name: db-config
   namespace: portfolio  
 data:
-  DB_HOST: mysql          # enter mysql host
+  DB_HOST: mysql         # enter mysql host
   DB_NAME: portfolio_db    # enter mysql database name
   DB_PORT: "3306"          # enter mysql port
 

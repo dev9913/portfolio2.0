@@ -1,41 +1,84 @@
-import React from 'react';
+import React, { useEffect, useRef } from "react";
 
-const Projects = () => (
-  <section id="projects">
-    <h2 className="section-title">Projects</h2>
-    <div className="project-grid">
-      <div className="project-card">
-        <h3>CI/CD Pipeline using GitHub Actions</h3>
-        <p>Automated deployment pipeline with build, test, security checks, and rollout steps.</p>
-        <span className="tools">GitHub Actions • Docker • Linux  </span>
-        <a href="https://github.com/dev9913/GithubAction-project" className="project-btn" target="_blank" rel="noopener noreferrer">  GitHub</a>
+
+const projects = [
+  {
+    title: "CI/CD Pipeline",
+    desc: "Automated build, test, security scan, and deployment using GitHub Actions.",
+    tech: ["GitHub Actions", "Docker", "Linux"],
+    link: "https://github.com/dev9913/GithubAction-project"
+  },
+  {
+    title: "Kubernetes Microservices",
+    desc: "Scalable microservices with autoscaling and observability.",
+    tech: ["Kubernetes", "Helm", "Prometheus"],
+    link: "https://github.com/dev9913/Proshop"
+  },
+  {
+    title: "Terraform on AWS",
+    desc: "Reusable Terraform modules for multi-env cloud infrastructure.",
+    tech: ["Terraform", "AWS", "Git"],
+    link: "https://github.com/dev9913/Terraform-aws"
+  },
+  {
+    title: "Dockerized Web App",
+    desc: "Production-ready containerized application.",
+    tech: ["Docker", "Nginx", "CI/CD"],
+    link: "https://github.com/dev9913/Mood-App-React"
+  }
+];
+
+const Projects = () => {
+  const itemsRef = useRef([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add("reveal");
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    itemsRef.current.forEach(el => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section id="projects" className="project-stories">
+      <h2 className="project-title"> Projects </h2>
+
+      <div className="project-list">
+        {projects.map((p, i) => (
+          <a
+            href={p.link}
+            target="_blank"
+            rel="noreferrer"
+            key={i}
+            ref={el => (itemsRef.current[i] = el)}
+            className="project-row"
+          >
+            <span className="arrow">→</span>
+
+            <div className="project-content">
+              <h3>{p.title}</h3>
+              <p>{p.desc}</p>
+
+              <div className="tech-row">
+                {p.tech.map(t => (
+                  <span key={t}>{t}</span>
+                ))}
+              </div>
+            </div>
+          </a>
+        ))}
       </div>
-      <div className="project-card">
-        <h3>Kubernetes Deployment for Microservices</h3>
-        <p>Deployed containerized services with autoscaling, monitoring, and service mesh.</p>
-        <span className="tools">K8s • Helm • Prometheus  </span>
-        <a href="https://github.com/dev9913/Proshop" className="project-btn" target="_blank" rel="noopener noreferrer">  GitHub</a>
-      </div>
-      <div className="project-card">
-        <h3>Infrastructure-as-Code with Terraform</h3>
-        <p>Provisioned cloud infrastructure with reusable modules & automated pipelines.</p>
-        <span className="tools">Terraform • AWS • Git  </span>
-        <a href="https://github.com/dev9913/Terraform-aws" className="project-btn" target="_blank" rel="noopener noreferrer">  GitHub</a>
-      </div>
-      <div className="project-card">
-        <h3>Dockerized Web App</h3>
-        <p>Containerized and optimized application for smooth deployment across environments.</p>
-        <span className="tools">Docker • Nginx • GitHub Actions  </span>
-        <a href="https://github.com/dev9913/Mood-App-React" className="project-btn" target="_blank" rel="noopener noreferrer">  GitHub</a>
-      </div>
-      <div className="project-card">
-        <h3>Monitoring Stack with Prometheus + Grafana  </h3>
-        <p>End-to-end monitoring platform with custom dashboards and alerting.</p>
-        <span className="tools">Prometheus • Grafana • Alertmanager  </span>
-        <a href="https://github.com/dev9913/Proshop" className="project-btn" target="_blank" rel="noopener noreferrer">  GitHub</a>
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default Projects;
+
