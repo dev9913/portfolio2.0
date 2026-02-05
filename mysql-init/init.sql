@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS portfolio_db;
 
-CREATE USER IF NOT EXISTS 'portfolio'@'%' IDENTIFIED BY 'admin123';
+CREATE USER IF NOT EXISTS 'portfolio'@'%' IDENTIFIED BY 'admin123';  -- db_user=portfolio db_password=admin123
 GRANT ALL PRIVILEGES ON portfolio_db.* TO 'portfolio'@'%';
 FLUSH PRIVILEGES;
 

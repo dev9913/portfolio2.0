@@ -1,20 +1,7 @@
 #!/bin/bash
 set -e
 
-#====== Destroy Docker =======
-
-echo "Stopping Docker..."
-sudo systemctl stop docker || true
-
-echo "Removing Docker..."
-sudo apt purge -y docker.io docker-ce docker-ce-cli containerd runc || true
-sudo apt autoremove -y
-rm -rf /var/lib/docker
-rm -rf /etc/docker
-
-echo "Docker removed successfully"
-
-#====== Destroy Docker =======
+#====== Destroy K3S =======
 
 echo "Stopping K3s..."
 sudo systemctl stop k3s || true

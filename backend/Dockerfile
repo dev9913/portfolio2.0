@@ -1,14 +1,19 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine
 
 WORKDIR /app
 
+RUN npm install -g npm@11.8.0
+
 COPY package*.json ./
 
-RUN npm  ci
-RUN npm install nodemailer mysql2 multer express dotenv cors body-parser
+RUN npm install  
 
 COPY . .
- 
+
+RUN addgroup -S app && adduser -S app -G app
+USER app
+
 EXPOSE 5000
 
-CMD ["node","src/server.js"]
+CMD ["node", "src/server.js"]
+

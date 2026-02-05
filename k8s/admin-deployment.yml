@@ -27,6 +27,7 @@ spec:
       containers:
         - name: admin
           image: dev7878/portfolio-admin:2.0.0
+          imagePullPolicy: Always
           command: ["sh", "-c"]
           args:
             - |
