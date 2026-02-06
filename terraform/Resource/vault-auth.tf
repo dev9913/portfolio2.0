@@ -47,6 +47,6 @@ resource "null_resource" "vault_setup" {
     }
 
     interpreter = ["/bin/bash", "-c"]
-    command     = "sudo bash ${path.module}./scripts/vault.sh"
+    command     = "bash ${path.module}./scripts/vault.sh"
   }
 }
