@@ -5,13 +5,13 @@ resource "null_resource" "k3s" {
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command     = "sudo bash ${path.module}./scripts/k3s.sh"
+    command     = "bash ${path.module}./scripts/k3s.sh"
   }
 
   provisioner "local-exec" {
     when        = destroy
     interpreter = ["/bin/bash", "-c"]
-    command     = "sudo bash ${path.module}./scripts/k3s-destroy.sh"
+    command     = "bash ${path.module}./scripts/k3s-destroy.sh"
   }
 }
 
