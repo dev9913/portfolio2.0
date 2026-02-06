@@ -42,9 +42,6 @@ pipeline {
         }
 
         stage('Git Checkout') {
-            when {
-                branch 'main'
-            }
             steps {
                 script {
                     git_checkout("https://github.com/dev9913/portfolio2.0.git","main")
@@ -55,9 +52,6 @@ pipeline {
         /* ================= DOCKER IMAGE BUILD ================= */
 
         stage('Docker Image Build') {
-            when {
-                branch 'main'
-            }
             parallel {
                 
                 stage('Build Frontend') {
@@ -89,10 +83,6 @@ pipeline {
 		/* ================= DOCKER IMAGE SCAN ================= */
 
         stage('Docker Image Scan') {
-            when {
-                branch 'main'
-            }
-
             parallel {
                 
                 stage('Image Scan Frontend') {
@@ -124,9 +114,6 @@ pipeline {
         /* ================= DOCKER IMAGE PUSH ================= */
 
         stage('Docker Image Push') {
-            when {
-                branch 'main'
-            }
             parallel {
                  
                 stage('Push Frontend') {
@@ -160,10 +147,6 @@ pipeline {
         /* ================= K8S IMAGE UPDATE ================= */
 
         stage('Kubernetes Image Update') {
-            when {
-                branch 'main'
-            }
-
             parallel {
                  
                 stage('Frontend Update') {
@@ -198,9 +181,6 @@ pipeline {
         /* ================= TERRAFORM ================= */
 
         stage('Terraform validate'){
-            when {
-                branch 'main'
-            }
             steps{
                 dir('terraform/Resource'){
                     sh 'terraform fmt -check'
@@ -211,10 +191,6 @@ pipeline {
         }
 
         stage('Terraform Init') {
-            when {
-                branch 'main'
-            }
-
             steps {
                 dir('terraform/Resource'){
                     sh 'terraform init'
@@ -223,9 +199,6 @@ pipeline {
         }
 
         stage('Terraform Plan') {
-			when {
-                branch 'main'
-            }
             steps {
                 dir('terraform/Resource'){
                     sh 'terraform plan -out=tfplan'
@@ -234,9 +207,6 @@ pipeline {
         }       
 
         stage('Terraform Apply') {
-		    when {
-		        branch 'main'
-		    }
 		    steps {
 		        dir('terraform/Resource') {
 		            withEnv([
