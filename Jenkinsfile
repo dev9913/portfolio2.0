@@ -3,6 +3,12 @@
 pipeline {
     agent { label 'agentdev' }
 
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 45, unit: 'MINUTES')
+        timestamps()
+    }
+
     parameters {
         string(name: 'IMAGE_TAG', defaultValue: '1.0.0', description: 'Docker image tag')
     }
@@ -10,23 +16,36 @@ pipeline {
     environment {
         APP_PASSWORD     = credentials('APP_PASSWORD')
         DB_ROOT_PASSWORD = credentials('DB_ROOT_PASSWORD')
-        BRANCH_NAME      = "${env.BRANCH_NAME ?: 'main'}"
+        VAULT_BOOTSTRAP_TOKEN = credentials('VAULT_BOOTSTRAP_TOKEN')
+        USER_EMAIL       = credentials('USER_EMAIL')
         DOCKER_USER      = "dev7878"
         GIT_USER         = "dev9913"
     }
 
     stages {
 
+        /* ================= ENV CHECK ================= */
+
+        stage('Check Environment Variables') {
+            steps {
+                sh '''
+                  [ -z "$APP_PASSWORD" ] && echo "APP_PASSWORD missing" && exit 1
+                  [ -z "$DB_ROOT_PASSWORD" ] && echo "DB_ROOT_PASSWORD missing" && exit 1
+                  [ -z "$VAULT_BOOTSTRAP_TOKEN" ] && echo "VAULT_BOOTSTRAP_TOKEN missing" && exit 1
+                  [ -z "$USER_EMAIL" ] && echo "USER_EMAIL missing" && exit 1
+
+                  echo "Credentials loaded successfully"
+                '''
+            }
+        }
+
         stage('Git Checkout') {
             when {
-                expression { env.BRANCH_NAME == 'main' }
+                branch 'main'
             }
             steps {
                 script {
-                    git_checkout(
-                        "https://github.com/dev9913/portfolio2.0.git",
-                        "${BRANCH_NAME}"
-                    )
+                    git_checkout("https://github.com/dev9913/portfolio2.0.git","main")
                 }
             }
         }
@@ -34,16 +53,15 @@ pipeline {
         /* ================= DOCKER IMAGE BUILD ================= */
 
         stage('Docker Image Build') {
+            when {
+                branch 'main'
+            }
             parallel {
+                failfast true 
                 stage('Build Frontend') {
                     steps {
                         script {
-                            image_build(
-                                "portfolio-frontend",
-                                params.IMAGE_TAG,
-                                DOCKER_USER,
-                                "frontend"
-                            )
+                            image_build("portfolio-frontend",params.IMAGE_TAG,DOCKER_USER,"frontend")
                         }
                     }
                 }
@@ -51,12 +69,7 @@ pipeline {
                 stage('Build Backend') {
                     steps {
                         script {
-                            image_build(
-                                "portfolio-backend",
-                                params.IMAGE_TAG,
-                                DOCKER_USER,
-                                "backend"
-                            )
+                            image_build("portfolio-backend",params.IMAGE_TAG,DOCKER_USER,"backend")
                         }
                     }
                 }
@@ -64,12 +77,7 @@ pipeline {
                 stage('Build Admin') {
                     steps {
                         script {
-                            image_build(
-                                "portfolio-admin",
-                                params.IMAGE_TAG,
-                                DOCKER_USER,
-                                "admin"
-                            )
+                            image_build("portfolio-admin",params.IMAGE_TAG,DOCKER_USER,"admin")
                         }
                     }
                 }
@@ -79,7 +87,11 @@ pipeline {
         /* ================= DOCKER IMAGE PUSH ================= */
 
         stage('Docker Image Push') {
+            when {
+                branch 'main'
+            }
             parallel {
+                failfast true 
                 stage('Push Frontend') {
                     steps {
                         script {
@@ -109,7 +121,12 @@ pipeline {
         /* ================= DOCKER IMAGE SCAN ================= */
 
         stage('Docker Image Scan') {
+            when {
+                branch 'main'
+            }
+
             parallel {
+                failfast true 
                 stage('Image Scan Frontend') {
                     steps {
                         script {
@@ -139,7 +156,12 @@ pipeline {
         /* ================= K8S IMAGE UPDATE ================= */
 
         stage('Kubernetes Image Update') {
+            when {
+                branch 'main'
+            }
+
             parallel {
+                failfast true 
                 stage('Frontend Update') {
                     steps {
                         script {
@@ -169,47 +191,66 @@ pipeline {
             }
         }
 
-        /* ================= ENV CHECK ================= */
+        /* ================= TERRAFORM ================= */
 
-        stage('Check Environment Variables') {
-            steps {
-                sh '''
-                  [ -z "$APP_PASSWORD" ] && echo "APP_PASSWORD missing" && exit 1
-                  [ -z "$DB_ROOT_PASSWORD" ] && echo "DB_ROOT_PASSWORD missing" && exit 1
-                  echo "Credentials loaded successfully"
-                '''
+        stage('Terraform validate'){
+            steps{
+                dir('terraform'){
+                    sh 'terraform fmt -check'
+                    sh 'terraform validate'
+
+                }
             }
         }
 
-        /* ================= TERRAFORM ================= */
-
         stage('Terraform Init') {
+            when {
+                branch 'main'
+            }
+
             steps {
-                sh 'terraform init'
+                dir('terraform'){
+                    sh 'terraform init'
+                }
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                sh 'terraform plan -out=tfplan'
+                dir('terraform'){
+                    sh 'terraform plan -out=tfplan'
+                }
             }
         }
 
         stage('Terraform Apply') {
-            steps {
-                sh '''
-                  terraform apply -auto-approve tfplan
-                '''
+            when {
+                branch 'main'
             }
-        }
+            steps {
+                dir('terraform') {
+                    withEnv([
+                        "TF_VAR_app_password=${APP_PASSWORD}",
+                        "TF_VAR_db_root_password=${DB_ROOT_PASSWORD}",
+                        "TF_VAR_vault_bootstrap_token=${VAULT_BOOTSTRAP_TOKEN}"
+                    ]) {
+                        sh '''
+                          terraform apply -auto-approve tfplan
+                        '''
+                    }
+                }
+            }
+}
+
     }
 
+    // Post Action 
     post {
         always {
             archiveArtifacts artifacts: 'tfplan, **/*.log', fingerprint: true
 
             emailext(
-                to: 'devjangig@gmail.com',
+                to: '${env.USER_EMAIL}',
                 subject: "Jenkins ${currentBuild.currentResult}: ${JOB_NAME} #${BUILD_NUMBER}",
                 body: """
 Job Name : ${JOB_NAME}
@@ -220,7 +261,7 @@ Build URL:
 ${BUILD_URL}
 """,
                 attachLog: true,
-                attachmentsPattern: 'tfplan, **/*.log,trivy-frontend.txt,trivy-backend.txt,trivy-admin.txt'
+                attachmentsPattern: 'tfplan, **/*.log,trivy-*.txt'
             )
 
             cleanWs(deleteDirs: true)

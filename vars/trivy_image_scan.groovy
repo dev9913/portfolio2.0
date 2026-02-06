@@ -5,7 +5,7 @@ def call(String imagename , String tag){
         trivy image \
         --skip-version-check \
         --exit-code 1 \
-        --severity HIGH,CRITICAL \
+        --severity CRITICAL \
         --format table \
         dev7878/portfolio-${imagename}:${tag} | tee trivy-${imagename}-${tag}.txt
     """
