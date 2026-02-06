@@ -18,6 +18,7 @@ pipeline {
         DB_ROOT_PASSWORD = credentials('DB_ROOT_PASSWORD')
         VAULT_BOOTSTRAP_TOKEN = credentials('VAULT_BOOTSTRAP_TOKEN')
         USER_EMAIL       = credentials('USER_EMAIL')
+        USER_EMAIL_PASSWORD = credentials('USER_EMAIL_PASSWORD')
         DOCKER_USER      = "dev7878"
         GIT_USER         = "dev9913"
     }
@@ -33,6 +34,7 @@ pipeline {
                   [ -z "$DB_ROOT_PASSWORD" ] && echo "DB_ROOT_PASSWORD missing" && exit 1
                   [ -z "$VAULT_BOOTSTRAP_TOKEN" ] && echo "VAULT_BOOTSTRAP_TOKEN missing" && exit 1
                   [ -z "$USER_EMAIL" ] && echo "USER_EMAIL missing" && exit 1
+                  [ -z "$USER_EMAIL_PASSWORD" ] && echo "USER_EMAIL_PASSWORD missing" && exit 1
 
                   echo "Credentials loaded successfully"
                 '''
@@ -194,8 +196,11 @@ pipeline {
         /* ================= TERRAFORM ================= */
 
         stage('Terraform validate'){
+            when {
+                branch 'main'
+            }
             steps{
-                dir('terraform'){
+                dir('terraform/Resource'){
                     sh 'terraform fmt -check'
                     sh 'terraform validate'
 
@@ -209,7 +214,7 @@ pipeline {
             }
 
             steps {
-                dir('terraform'){
+                dir('terraform/Resource'){
                     sh 'terraform init'
                 }
             }
@@ -217,38 +222,40 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                dir('terraform'){
+                dir('terraform/Resource'){
                     sh 'terraform plan -out=tfplan'
                 }
             }
-        }
+        }       
 
         stage('Terraform Apply') {
             when {
                 branch 'main'
             }
             steps {
-                dir('terraform') {
+                dir('terraform/Resource') {
                     withEnv([
-                        "TF_VAR_app_password=${APP_PASSWORD}",
-                        "TF_VAR_db_root_password=${DB_ROOT_PASSWORD}",
-                        "TF_VAR_vault_bootstrap_token=${VAULT_BOOTSTRAP_TOKEN}"
-                    ]) {
-                        sh '''
+                   "VAULT_ADDR=http://vault.vault.svc.cluster.local:8200",
+                   "VAULT_BOOTSTRAP_TOKEN=${VAULT_BOOTSTRAP_TOKEN}",
+                   "APP_PASSWORD=${APP_PASSWORD}",
+                   "DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}",
+                   "USER_EMAIL=${USER_EMAIL}",
+                   "USER_EMAIL_PASSWORD=${USER_EMAIL_PASSWORD}"
+                ]) {
+                    sh '''
                           terraform apply -auto-approve tfplan
                         '''
-                    }
                 }
             }
-}
+	    }
 
     }
 
     // Post Action 
     post {
         always {
-            archiveArtifacts artifacts: 'tfplan, **/*.log', fingerprint: true
-
+            archiveArtifacts artifacts: 'terraform/Resource/tfplan, **/*.log', fingerprint: true
+            
             emailext(
                 to: '${env.USER_EMAIL}',
                 subject: "Jenkins ${currentBuild.currentResult}: ${JOB_NAME} #${BUILD_NUMBER}",
@@ -261,11 +268,12 @@ Build URL:
 ${BUILD_URL}
 """,
                 attachLog: true,
-                attachmentsPattern: 'tfplan, **/*.log,trivy-*.txt'
+                attachmentsPattern: 'terraform/Resource/tfplan, **/*.log,trivy-*.txt'
             )
 
             cleanWs(deleteDirs: true)
         }
     }
 }
+
 

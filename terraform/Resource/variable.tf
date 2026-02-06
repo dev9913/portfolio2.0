@@ -1,6 +1,6 @@
-variable "project_Namespace"{
+variable "project_Namespace" {
   default = "portfolio"
-  type = string
+  type    = string
 }
 
 variable "vault_bootstrap_token" {
@@ -14,6 +14,16 @@ variable "app_password" {
 }
 
 variable "db_root_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "user_email" {
+  type      = string
+  sensitive = true
+}
+
+variable "user_email_password" {
   type      = string
   sensitive = true
 }

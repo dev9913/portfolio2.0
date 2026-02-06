@@ -1,17 +1,17 @@
 resource "null_resource" "k3s" {
   triggers = {
-    install_hash = filemd5("${path.module}/k3s.sh")
+    install_hash = filemd5("${path.module}./scripts/k3s.sh")
   }
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command     = "sudo bash ${path.module}/k3s.sh"
+    command     = "sudo bash ${path.module}./scripts/k3s.sh"
   }
 
   provisioner "local-exec" {
     when        = destroy
     interpreter = ["/bin/bash", "-c"]
-    command     = "sudo bash ${path.module}/k3s-destroy.sh"
+    command     = "sudo bash ${path.module}./scripts/k3s-destroy.sh"
   }
 }
 

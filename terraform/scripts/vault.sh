@@ -2,7 +2,7 @@
 set -e
 
 export VAULT_ADDR="http://vault.vault.svc.cluster.local:8200"
-export VAULT_TOKEN="$VAULT_BOOTSTRAP_TOKEN"c
+
 echo "Using VAULT_TOKEN for authentication"
 vault status
 
