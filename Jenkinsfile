@@ -234,27 +234,27 @@ pipeline {
         }       
 
         stage('Terraform Apply') {
-            when {
-                branch 'main'
-            }
-            steps {
-                dir('terraform/Resource') {
-                   withEnv([
-					  "VAULT_ADDR=http://vault.vault.svc.cluster.local:8200",
-					  "VAULT_TOKEN=${VAULT_BOOTSTRAP_TOKEN}",
-					
-					  "TF_VAR_vault_bootstrap_token=${VAULT_BOOTSTRAP_TOKEN}",
-					  "TF_VAR_app_password=${APP_PASSWORD}",
-					  "TF_VAR_db_root_password=${DB_ROOT_PASSWORD}",
-					  "TF_VAR_user_email=${USER_EMAIL}",
-					  "TF_VAR_user_email_password=${USER_EMAIL_PASSWORD}"
-					]) {
-					    sh 'terraform apply -auto-approve tfplan'
-				}
-            }
-	    }
-
-    }
+		    when {
+		        branch 'main'
+		    }
+		    steps {
+		        dir('terraform/Resource') {
+		            withEnv([
+		                "VAULT_ADDR=http://vault.vault.svc.cluster.local:8200",
+		                "VAULT_TOKEN=${VAULT_BOOTSTRAP_TOKEN}",
+		
+		                "TF_VAR_vault_bootstrap_token=${VAULT_BOOTSTRAP_TOKEN}",
+		                "TF_VAR_app_password=${APP_PASSWORD}",
+		                "TF_VAR_db_root_password=${DB_ROOT_PASSWORD}",
+		                "TF_VAR_user_email=${USER_EMAIL}",
+		                "TF_VAR_user_email_password=${USER_EMAIL_PASSWORD}"
+		            ]) {
+		                sh 'terraform apply -auto-approve tfplan'
+		            }
+		        }
+		    }
+		}
+	}
 
     // Post Action 
     post {
