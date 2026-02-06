@@ -180,20 +180,18 @@ pipeline {
 
         /* ================= TERRAFORM ================= */
 
-        stage('Terraform validate'){
-            steps{
-                dir('terraform/Resource'){
-                    sh 'terraform fmt '
-                    sh 'terraform validate'
-
-                }
-            }
-        }
-
         stage('Terraform Init') {
             steps {
                 dir('terraform/Resource'){
                     sh 'terraform init'
+                }
+            }
+        }
+		stage('Terraform validate'){
+            steps{
+                dir('terraform/Resource'){
+                    sh 'terraform validate'
+
                 }
             }
         }
