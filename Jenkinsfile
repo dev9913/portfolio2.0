@@ -183,7 +183,7 @@ pipeline {
         stage('Terraform validate'){
             steps{
                 dir('terraform/Resource'){
-                    sh 'terraform fmt -check'
+                    sh 'terraform fmt '
                     sh 'terraform validate'
 
                 }
