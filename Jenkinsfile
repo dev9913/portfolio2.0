@@ -59,7 +59,7 @@ pipeline {
                 branch 'main'
             }
             parallel {
-                failFast true 
+                
                 stage('Build Frontend') {
                     steps {
                         script {
@@ -94,7 +94,7 @@ pipeline {
             }
 
             parallel {
-                failFast true 
+                
                 stage('Image Scan Frontend') {
                     steps {
                         script {
@@ -128,7 +128,7 @@ pipeline {
                 branch 'main'
             }
             parallel {
-                failFast true 
+                 
                 stage('Push Frontend') {
                     steps {
                         script {
@@ -165,7 +165,7 @@ pipeline {
             }
 
             parallel {
-                failFast true 
+                 
                 stage('Frontend Update') {
                     steps {
                         script {
