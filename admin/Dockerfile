@@ -1,24 +1,23 @@
-FROM php:8.2-apache
+FROM php:8.3-alpine
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
+RUN apk update && apk upgrade --no-cache \
+ && apk add --no-cache \
+    linux-headers \
+    musl \
+    musl-dev \
+    libexpat \
+    curl \
+    git \
     unzip \
-    libexpat1 \
- && rm -rf /var/lib/apt/lists/*
+    vim \
+ && rm -rf /var/cache/apk/*
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
-
-RUN a2enmod headers \
- && echo "ServerTokens Prod" >> /etc/apache2/apache2.conf \
- && echo "ServerSignature Off" >> /etc/apache2/apache2.conf
 
 COPY . /var/www/html/
 RUN chown -R www-data:www-data /var/www/html/
 
-USER www-data
-
 EXPOSE 80
 CMD ["apache2-foreground"]
-
