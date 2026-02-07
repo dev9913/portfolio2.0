@@ -2,8 +2,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN npm install -g npm@11.8.0
-
+RUN npm install -g npm@11.9.0
+RUN apk update 
 COPY package*.json ./
 
 RUN npm install  
@@ -16,4 +16,3 @@ USER app
 EXPOSE 5000
 
 CMD ["node", "src/server.js"]
-
