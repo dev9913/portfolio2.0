@@ -53,7 +53,9 @@ pipeline {
 			    expression { BRANCH == 'main' }
 			}
             parallel {
-                failFast true 
+                options {
+			        failFast true
+			    }
 
                 stage('Build Frontend') {
                     steps {
@@ -88,7 +90,9 @@ pipeline {
 			    expression { BRANCH == 'main' }
 			}
             parallel {
-                failFast true 
+                options {
+			        failFast true
+			    }
                 stage('Image Scan Frontend') {
                     steps {
                         script {
@@ -122,7 +126,9 @@ pipeline {
 			    expression { BRANCH == 'main' }
 			}
             parallel {
-                failFast true  
+                options {
+			        failFast true
+			    }  
                 stage('Push Frontend') {
                     steps {
                         script {
@@ -158,7 +164,9 @@ pipeline {
 			    expression { BRANCH == 'main' }
 			}
             parallel {
-                failFast true 
+                options {
+			        failFast true
+			    } 
                 stage('Frontend Update') {
                     steps {
                         script {
