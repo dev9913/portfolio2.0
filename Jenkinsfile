@@ -50,8 +50,8 @@ pipeline {
 
         stage('Docker Image Build') {
             when {
-                branch 'main'
-            }
+			    expression { BRANCH == 'main' }
+			}
             parallel {
                 failFast true 
 
@@ -85,8 +85,8 @@ pipeline {
 
         stage('Docker Image Scan') {
             when {
-                branch 'main'
-            }
+			    expression { BRANCH == 'main' }
+			}
             parallel {
                 failFast true 
                 stage('Image Scan Frontend') {
@@ -119,8 +119,8 @@ pipeline {
 
         stage('Docker Image Push') {
             when {
-                branch 'main'
-            }
+			    expression { BRANCH == 'main' }
+			}
             parallel {
                 failFast true  
                 stage('Push Frontend') {
@@ -155,8 +155,8 @@ pipeline {
 
         stage('Kubernetes Image Update') {
             when {
-                branch 'main'
-            }
+			    expression { BRANCH == 'main' }
+			}
             parallel {
                 failFast true 
                 stage('Frontend Update') {
@@ -198,7 +198,7 @@ pipeline {
             archiveArtifacts artifacts: '**/*.log', fingerprint: true
             emailext(
                 to: "${env.USER_EMAIL}",
-                subject: " SUCCESS : ${env.JON_NAME} # ${env.BUILD_NUMBER}",
+                subject: " SUCCESS : ${env.JOB_NAME} # ${env.BUILD_NUMBER}",
                 body: " Bhai Pipeline Completed Successfully. \n${env.BUILD_URL}",
                 attachLog: true,
                 attachmentsPattern: '**/*.log,trivy-*.txt'
@@ -209,7 +209,7 @@ pipeline {
             archiveArtifacts artifacts: '**/*.log', fingerprint: true
             emailext(
                 to: "${env.USER_EMAIL}",
-                subject: " FAILED : ${env.JON_NAME} # ${env.BUILD_NUMBER}",
+                subject: " FAILED : ${env.JOB_NAME} # ${env.BUILD_NUMBER}",
                 body: " Bhai Pipeline Failed.\nCheck logs:\n${env.BUILD_URL}",
                 attachLog: true,
                 attachmentsPattern: '**/*.log,trivy-*.txt'
@@ -219,7 +219,7 @@ pipeline {
             archiveArtifacts artifacts: '**/*.log', fingerprint: true
             emailext(
                 to: "${env.USER_EMAIL}",
-                subject: " UNSTABLE : ${env.JON_NAME} #${env.BUILD_NUMBER}",
+                subject: " UNSTABLE : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: " Bhai Pipeline Unstable.\n${env.BUILD_URL}",
                 attachLog: true,
                 attachmentsPattern: '**/*.log,trivy-*.txt'
