@@ -1,15 +1,12 @@
-#--------- Build Stage ----
-FROM node:20-alpine AS builder 
+# -------- Build Stage --------
+FROM node:20-alpine AS builder
 WORKDIR /app
-RUN npm install -g npm@11.8.0
-
 COPY package*.json ./
-RUN npm install
-COPY . . 
-RUN npm run build 
-
-#--------- Running Stage ----
-FROM nginx:stable-alpine 
+RUN npm ci
+COPY . .
+RUN npm run build
+# -------- Runtime Stage --------
+FROM nginx:stable-alpine
 RUN apk update && apk upgrade --no-cache busybox busybox-binsh c-ares libcrypto3 libpng libssl3 libxml2 ssl_client libexpat
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/build /usr/share/nginx/html/
