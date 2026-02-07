@@ -22,7 +22,7 @@ def call(String imagename, String tag, String username) {
               git pull origin main 
               git status
               git add k8s/${imagename}-deployment.yml
-              git commit -m "ci: update ${imagename} image to ${tag} [skip ci]" || true
+              git commit -m "Ci: update ${imagename} image to ${tag} " || true
               git push https://\$GIT_USER:\$GIT_TOKEN@github.com/${username}/portfolio2.0.git HEAD:main
             
             """
