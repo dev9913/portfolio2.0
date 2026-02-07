@@ -171,6 +171,7 @@ pipeline {
 
         always {
             cleanWs(deleteDirs: true)
+            sh 'rm -rf $WORKSPACE/.trivy-cache-* || true'
         }
     }
 }
