@@ -1,10 +1,9 @@
 def call(String imagename, String tag) {
     println "Scanning Docker Image ==> dev7878/portfolio-${imagename}:${tag}"
-
     sh """
-        set -e
-        export TRIVY_CACHE_DIR=\$WORKSPACE/.trivy-cache-${imagename}
-
+        set -euo pipefail
+        export TRIVY_CACHE_DIR=\$WORKSPACE/.trivy-cache-admin
+    
         trivy image \
           --scanners vuln \
           --skip-version-check \
@@ -12,7 +11,8 @@ def call(String imagename, String tag) {
           --severity CRITICAL \
           --format table \
           dev7878/portfolio-${imagename}:${tag} | tee trivy-${imagename}-${tag}.txt
-    """
+        """
+
 
     println "IMAGE SCAN Successfully dev7878/portfolio-${imagename}:${tag}"
 }
