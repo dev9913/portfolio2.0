@@ -1,7 +1,7 @@
 @Library('portfoliolib') _
 
 pipeline {
-    agent {label 'agentdev' }
+    agent { label 'agentdev' }
 
     options {
         disableConcurrentBuilds()
@@ -14,14 +14,11 @@ pipeline {
     }
 
     environment {
-        // APP_PASSWORD     = credentials('APP_PASSWORD')
-        // DB_ROOT_PASSWORD = credentials('DB_ROOT_PASSWORD')
-        // VAULT_BOOTSTRAP_TOKEN = credentials('VAULT_BOOTSTRAP_TOKEN')
-        USER_EMAIL       = credentials('USER_EMAIL')
-        USER_EMAIL_PASSWORD = credentials('USER_EMAIL_PASSWORD')
-        BRANCH = "main"
-        DOCKER_USER      = "dev7878"
-        GIT_USER         = "dev9913"
+        USER_EMAIL            = credentials('USER_EMAIL')
+        USER_EMAIL_PASSWORD   = credentials('USER_EMAIL_PASSWORD')
+        BRANCH                = "main"
+        DOCKER_USER           = "dev7878"
+        GIT_USER              = "dev9913"
     }
 
     stages {
@@ -41,7 +38,7 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 script {
-                    git_checkout("https://github.com/dev9913/portfolio2.0.git",BRANCH)
+                    git_checkout("https://github.com/dev9913/portfolio2.0.git", BRANCH)
                 }
             }
         }
@@ -49,66 +46,39 @@ pipeline {
         /* ================= DOCKER IMAGE BUILD ================= */
 
         stage('Docker Image Build') {
-            when {
-			    expression { BRANCH == 'main' }
-			}
-            parallel {
-                stage('Build Frontend') {
-                    steps {
-                        script {
-                            image_build("portfolio-frontend",params.IMAGE_TAG,DOCKER_USER,"frontend")
+            when { expression { BRANCH == 'main' } }
+            steps {
+                script {
+                    parallel failFast: true,
+                        frontend: {
+                            image_build("portfolio-frontend", params.IMAGE_TAG, DOCKER_USER, "frontend")
+                        },
+                        backend: {
+                            image_build("portfolio-backend", params.IMAGE_TAG, DOCKER_USER, "backend")
+                        },
+                        admin: {
+                            image_build("portfolio-admin", params.IMAGE_TAG, DOCKER_USER, "admin")
                         }
-                    }
-                }
-
-                stage('Build Backend') {
-                    steps {
-                        script {
-                            image_build("portfolio-backend",params.IMAGE_TAG,DOCKER_USER,"backend")
-                        }
-                    }
-                }
-
-                stage('Build Admin') {
-                    steps {
-                        script {
-                            image_build("portfolio-admin",params.IMAGE_TAG,DOCKER_USER,"admin")
-                        }
-                    }
                 }
             }
         }
 
-		/* ================= DOCKER IMAGE SCAN ================= */
+        /* ================= DOCKER IMAGE SCAN ================= */
 
         stage('Docker Image Scan') {
-            when {
-			    expression { BRANCH == 'main' }
-			}
-            parallel {
-               
-                stage('Image Scan Frontend') {
-                    steps {
-                        script {
+            when { expression { BRANCH == 'main' } }
+            steps {
+                script {
+                    parallel failFast: true,
+                        frontend: {
                             trivy_image_scan("frontend", params.IMAGE_TAG)
-                        }
-                    }
-                }
-
-                stage('Image Scan Backend') {
-                    steps {
-                        script {
+                        },
+                        backend: {
                             trivy_image_scan("backend", params.IMAGE_TAG)
-                        }
-                    }
-                }
-
-                stage('Image Scan Admin') {
-                    steps {
-                        script {
+                        },
+                        admin: {
                             trivy_image_scan("admin", params.IMAGE_TAG)
                         }
-                    }
                 }
             }
         }
@@ -116,117 +86,85 @@ pipeline {
         /* ================= DOCKER IMAGE PUSH ================= */
 
         stage('Docker Image Push') {
-            when {
-			    expression { BRANCH == 'main' }
-			}
-            parallel {
-                  
-                stage('Push Frontend') {
-                    steps {
-                        script {
+            when { expression { BRANCH == 'main' } }
+            steps {
+                script {
+                    parallel failFast: true,
+                        frontend: {
                             image_push("portfolio-frontend", params.IMAGE_TAG, DOCKER_USER)
-                        }
-                    }
-                }
-
-                stage('Push Backend') {
-                    steps {
-                        script {
+                        },
+                        backend: {
                             image_push("portfolio-backend", params.IMAGE_TAG, DOCKER_USER)
-                        }
-                    }
-                }
-
-                stage('Push Admin') {
-                    steps {
-                        script {
+                        },
+                        admin: {
                             image_push("portfolio-admin", params.IMAGE_TAG, DOCKER_USER)
                         }
-                    }
                 }
             }
         }
-        
-        
 
         /* ================= K8S IMAGE UPDATE ================= */
 
         stage('Kubernetes Image Update') {
-            when {
-			    expression { BRANCH == 'main' }
-			}
-            parallel {
-                 
-                stage('Frontend Update') {
-                    steps {
-                        script {
+            when { expression { BRANCH == 'main' } }
+            steps {
+                script {
+                    parallel failFast: true,
+                        frontend: {
                             k8s_image_tag_update("frontend", params.IMAGE_TAG)
                             k8s_image_push_on_git("frontend", params.IMAGE_TAG, GIT_USER)
-                        }
-                    }
-                }
-
-                stage('Backend Update') {
-                    steps {
-                        script {
+                        },
+                        backend: {
                             k8s_image_tag_update("backend", params.IMAGE_TAG)
                             k8s_image_push_on_git("backend", params.IMAGE_TAG, GIT_USER)
-                        }
-                    }
-                }
-
-                stage('Admin Update') {
-                    steps {
-                        script {
+                        },
+                        admin: {
                             k8s_image_tag_update("admin", params.IMAGE_TAG)
                             k8s_image_push_on_git("admin", params.IMAGE_TAG, GIT_USER)
                         }
-                    }
                 }
             }
         }
+    }
 
-        
-	}
+    /* ================= POST ACTIONS ================= */
 
-    // Post Action 
     post {
-        
         success {
             archiveArtifacts artifacts: '**/*.log', fingerprint: true
             emailext(
                 to: "${env.USER_EMAIL}",
-                subject: " SUCCESS : ${env.JOB_NAME} # ${env.BUILD_NUMBER}",
-                body: " Bhai Pipeline Completed Successfully. \n${env.BUILD_URL}",
+                subject: "SUCCESS : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Bhai Pipeline Completed Successfully.\n${env.BUILD_URL}",
                 attachLog: true,
                 attachmentsPattern: '**/*.log,trivy-*.txt'
             )
         }
 
-        failure{
+        failure {
             archiveArtifacts artifacts: '**/*.log', fingerprint: true
             emailext(
                 to: "${env.USER_EMAIL}",
-                subject: " FAILED : ${env.JOB_NAME} # ${env.BUILD_NUMBER}",
-                body: " Bhai Pipeline Failed.\nCheck logs:\n${env.BUILD_URL}",
+                subject: "FAILED : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Bhai Pipeline Failed.\nCheck logs:\n${env.BUILD_URL}",
                 attachLog: true,
                 attachmentsPattern: '**/*.log,trivy-*.txt'
             )
         }
-        unstable{
+
+        unstable {
             archiveArtifacts artifacts: '**/*.log', fingerprint: true
             emailext(
                 to: "${env.USER_EMAIL}",
-                subject: " UNSTABLE : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: " Bhai Pipeline Unstable.\n${env.BUILD_URL}",
+                subject: "UNSTABLE : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Bhai Pipeline Unstable.\n${env.BUILD_URL}",
                 attachLog: true,
                 attachmentsPattern: '**/*.log,trivy-*.txt'
             )
         }
+
         always {
             cleanWs(deleteDirs: true)
         }
-
     }
 }
-
