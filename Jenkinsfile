@@ -1,7 +1,7 @@
 @Library('portfoliolib') _
 
 pipeline {
-    agent any
+    agent {label 'agentdev' }
 
     options {
         disableConcurrentBuilds()
