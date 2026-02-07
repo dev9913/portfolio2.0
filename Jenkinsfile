@@ -131,7 +131,9 @@ pipeline {
 
     post {
         success {
-            archiveArtifacts artifacts: '**/*.log', fingerprint: true
+            archiveArtifacts artifacts: '**/*.log',
+                     fingerprint: true,
+                     allowEmptyArchive: true
             emailext(
                 to: "${env.USER_EMAIL}",
                 subject: "SUCCESS : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -142,7 +144,9 @@ pipeline {
         }
 
         failure {
-            archiveArtifacts artifacts: '**/*.log', fingerprint: true
+            archiveArtifacts artifacts: '**/*.log',
+                     fingerprint: true,
+                     allowEmptyArchive: true
             emailext(
                 to: "${env.USER_EMAIL}",
                 subject: "FAILED : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -153,7 +157,9 @@ pipeline {
         }
 
         unstable {
-            archiveArtifacts artifacts: '**/*.log', fingerprint: true
+            archiveArtifacts artifacts: '**/*.log',
+                     fingerprint: true,
+                     allowEmptyArchive: true
             emailext(
                 to: "${env.USER_EMAIL}",
                 subject: "UNSTABLE : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
