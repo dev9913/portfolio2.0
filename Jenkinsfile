@@ -10,15 +10,16 @@ pipeline {
     }
 
     parameters {
-        string(name: 'IMAGE_TAG', defaultValue: '1.0.0', description: 'Docker image tag')
+        string(name: 'IMAGE_TAG', defaultValue: '3.0.0', description: 'Docker image tag')
     }
 
     environment {
-        APP_PASSWORD     = credentials('APP_PASSWORD')
-        DB_ROOT_PASSWORD = credentials('DB_ROOT_PASSWORD')
-        VAULT_BOOTSTRAP_TOKEN = credentials('VAULT_BOOTSTRAP_TOKEN')
+        // APP_PASSWORD     = credentials('APP_PASSWORD')
+        // DB_ROOT_PASSWORD = credentials('DB_ROOT_PASSWORD')
+        // VAULT_BOOTSTRAP_TOKEN = credentials('VAULT_BOOTSTRAP_TOKEN')
         USER_EMAIL       = credentials('USER_EMAIL')
         USER_EMAIL_PASSWORD = credentials('USER_EMAIL_PASSWORD')
+        BRANCH = "main"
         DOCKER_USER      = "dev7878"
         GIT_USER         = "dev9913"
     }
@@ -44,7 +45,7 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 script {
-                    git_checkout("https://github.com/dev9913/portfolio2.0.git","main")
+                    git_checkout("https://github.com/dev9913/portfolio2.0.git",BRANCH)
                 }
             }
         }
@@ -52,8 +53,12 @@ pipeline {
         /* ================= DOCKER IMAGE BUILD ================= */
 
         stage('Docker Image Build') {
+            when {
+                branch 'main'
+            }
             parallel {
-                
+                failFast true 
+
                 stage('Build Frontend') {
                     steps {
                         script {
@@ -83,8 +88,11 @@ pipeline {
 		/* ================= DOCKER IMAGE SCAN ================= */
 
         stage('Docker Image Scan') {
+            when {
+                branch 'main'
+            }
             parallel {
-                
+                failFast true 
                 stage('Image Scan Frontend') {
                     steps {
                         script {
@@ -114,8 +122,11 @@ pipeline {
         /* ================= DOCKER IMAGE PUSH ================= */
 
         stage('Docker Image Push') {
+            when {
+                branch 'main'
+            }
             parallel {
-                 
+                failFast true  
                 stage('Push Frontend') {
                     steps {
                         script {
@@ -147,8 +158,11 @@ pipeline {
         /* ================= K8S IMAGE UPDATE ================= */
 
         stage('Kubernetes Image Update') {
+            when {
+                branch 'main'
+            }
             parallel {
-                 
+                failFast true 
                 stage('Frontend Update') {
                     steps {
                         script {
@@ -178,86 +192,47 @@ pipeline {
             }
         }
 
-        /* ================= TERRAFORM ================= */
-
-        stage('Terraform Init') {
-            steps {
-                dir('terraform/Resource'){
-                    sh 'terraform init'
-                }
-            }
-        }
-		stage('Terraform validate'){
-            steps{
-                dir('terraform/Resource'){
-                    sh 'terraform validate'
-
-                }
-            }
-        }
-
-        stage('Terraform Plan') {
-            steps {
-                dir('terraform/Resource'){
-					withEnv([
-		                "VAULT_ADDR=http://vault.vault.svc.cluster.local:8200",
-		                "VAULT_TOKEN=${VAULT_BOOTSTRAP_TOKEN}",
-		
-		                "TF_VAR_vault_bootstrap_token=${VAULT_BOOTSTRAP_TOKEN}",
-		                "TF_VAR_app_password=${APP_PASSWORD}",
-		                "TF_VAR_db_root_password=${DB_ROOT_PASSWORD}",
-		                "TF_VAR_user_email=${USER_EMAIL}",
-		                "TF_VAR_user_email_password=${USER_EMAIL_PASSWORD}"
-		            ]) {
-                    sh 'terraform plan -out=tfplan'
-                }}
-            }
-        }       
-
-        stage('Terraform Apply') {
-		    steps {
-		        dir('terraform/Resource') {
-		            withEnv([
-		                "VAULT_ADDR=http://vault.vault.svc.cluster.local:8200",
-		                "VAULT_TOKEN=${VAULT_BOOTSTRAP_TOKEN}",
-		
-		                "TF_VAR_vault_bootstrap_token=${VAULT_BOOTSTRAP_TOKEN}",
-		                "TF_VAR_app_password=${APP_PASSWORD}",
-		                "TF_VAR_db_root_password=${DB_ROOT_PASSWORD}",
-		                "TF_VAR_user_email=${USER_EMAIL}",
-		                "TF_VAR_user_email_password=${USER_EMAIL_PASSWORD}"
-		            ]) {
-		                sh 'terraform apply -auto-approve tfplan'
-		            }
-		        }
-		    }
-		}
+        
 	}
 
     // Post Action 
     post {
-        always {
-            archiveArtifacts artifacts: 'terraform/Resource/tfplan, **/*.log', fingerprint: true
-            
+        
+        success {
+            archiveArtifacts artifacts: '**/*.log', fingerprint: true
             emailext(
                 to: "${env.USER_EMAIL}",
-				
-                subject: "Jenkins ${currentBuild.currentResult}: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: """
-Job Name : ${JOB_NAME}
-Build No : ${BUILD_NUMBER}
-Status   : ${currentBuild.currentResult}
-
-Build URL:
-${BUILD_URL}
-""",
+                subject: " SUCCESS : ${env.JON_NAME} # ${env.BUILD_NUMBER}",
+                body: " Bhai Pipeline Completed Successfully. \n${env.BUILD_URL}",
                 attachLog: true,
-                attachmentsPattern: 'terraform/Resource/tfplan, **/*.log,trivy-*.txt'
+                attachmentsPattern: '**/*.log,trivy-*.txt'
             )
+        }
 
+        failure{
+            archiveArtifacts artifacts: '**/*.log', fingerprint: true
+            emailext(
+                to: "${env.USER_EMAIL}",
+                subject: " FAILED : ${env.JON_NAME} # ${env.BUILD_NUMBER}",
+                body: " Bhai Pipeline Failed.\nCheck logs:\n${env.BUILD_URL}",
+                attachLog: true,
+                attachmentsPattern: '**/*.log,trivy-*.txt'
+            )
+        }
+        unstable{
+            archiveArtifacts artifacts: '**/*.log', fingerprint: true
+            emailext(
+                to: "${env.USER_EMAIL}",
+                subject: " UNSTABLE : ${env.JON_NAME} #${env.BUILD_NUMBER}",
+                body: " Bhai Pipeline Unstable.\n${env.BUILD_URL}",
+                attachLog: true,
+                attachmentsPattern: '**/*.log,trivy-*.txt'
+            )
+        }
+        always {
             cleanWs(deleteDirs: true)
         }
+
     }
 }
-
 
