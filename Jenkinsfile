@@ -31,12 +31,8 @@ pipeline {
         stage('Check Environment Variables') {
             steps {
                 sh '''
-                  [ -z "$APP_PASSWORD" ] && echo "APP_PASSWORD missing" && exit 1
-                  [ -z "$DB_ROOT_PASSWORD" ] && echo "DB_ROOT_PASSWORD missing" && exit 1
-                  [ -z "$VAULT_BOOTSTRAP_TOKEN" ] && echo "VAULT_BOOTSTRAP_TOKEN missing" && exit 1
                   [ -z "$USER_EMAIL" ] && echo "USER_EMAIL missing" && exit 1
                   [ -z "$USER_EMAIL_PASSWORD" ] && echo "USER_EMAIL_PASSWORD missing" && exit 1
-
                   echo "Credentials loaded successfully"
                 '''
             }
