@@ -2,9 +2,11 @@ FROM php:8.2-apache
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get upgrade -y \
-    && apt-get install -y unzip \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    unzip \
+    libexpat1 \
+ && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
