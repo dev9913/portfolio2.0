@@ -16,6 +16,7 @@ pipeline {
     environment {
         USER_EMAIL            = credentials('USER_EMAIL')
         USER_EMAIL_PASSWORD   = credentials('USER_EMAIL_PASSWORD')
+        ARTIFACTS             = '**/*.log,trivy-*.txt,checkov-*.json'
         BRANCH                = "main"
         DOCKER_USER           = "dev7878"
         GIT_USER              = "dev9913"
@@ -131,9 +132,8 @@ pipeline {
 
     post {
         success {
-            archiveArtifacts artifacts: '**/*.log',
-                     fingerprint: true,
-                     allowEmptyArchive: true
+            archiveArtifacts artifacts: env.ARTIFACTS,
+                         allowEmptyArchive: true
             emailext(
                 to: "${env.USER_EMAIL}",
                 subject: "SUCCESS : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -144,9 +144,8 @@ pipeline {
         }
 
         failure {
-            archiveArtifacts artifacts: '**/*.log',
-                     fingerprint: true,
-                     allowEmptyArchive: true
+            archiveArtifacts artifacts: env.ARTIFACTS,
+                         allowEmptyArchive: true
             emailext(
                 to: "${env.USER_EMAIL}",
                 subject: "FAILED : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -157,9 +156,8 @@ pipeline {
         }
 
         unstable {
-            archiveArtifacts artifacts: '**/*.log',
-                     fingerprint: true,
-                     allowEmptyArchive: true
+            archiveArtifacts artifacts: env.ARTIFACTS,
+                         allowEmptyArchive: true
             emailext(
                 to: "${env.USER_EMAIL}",
                 subject: "UNSTABLE : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
