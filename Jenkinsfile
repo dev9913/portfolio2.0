@@ -12,14 +12,16 @@ pipeline {
     parameters {
         string(name: 'IMAGE_TAG', defaultValue: '3.0.0', description: 'Docker image tag')
     }
-
+ 
     environment {
-        USER_EMAIL            = credentials('USER_EMAIL')
-        USER_EMAIL_PASSWORD   = credentials('USER_EMAIL_PASSWORD')
-        ARTIFACTS             = '**/*.log,trivy-*.txt,checkov-*.json'
-        BRANCH                = "main"
-        DOCKER_USER           = "dev7878"
-        GIT_USER              = "dev9913"
+        USER_EMAIL                  = credentials('USER_EMAIL')
+        USER_EMAIL_PASSWORD         = credentials('USER_EMAIL_PASSWORD')
+        ARTIFACTS                   = '**/*.log,trivy-*.txt'
+        ANSIBLE_HOST_KEY_CHECKING   = 'False'
+        TF_IN_AUTOMATION            = "true"
+        BRANCH                      = "main"
+        DOCKER_USER                 = "dev7878"
+        GIT_USER                    = "dev9913"
     }
 
     stages {
@@ -126,6 +128,88 @@ pipeline {
                 }
             }
         }
+
+        /* ================= Ansible ================= */
+
+        stage('Install Ansible') {
+            steps {
+                sh '''
+                  if ! command -v ansible >/dev/null 2>&1; then
+                    sudo apt update
+                    sudo apt install -y ansible
+                  fi
+                '''
+            }
+        }
+        stage('Ping Test') {
+            steps {
+                sh '''
+                  ansible -i ansible/inventory.ini server -m ping
+                '''
+            }
+        }
+        stage('Install k3s  and Helm Chart ') {
+            steps {
+                sh '''
+                  ansible-playbook -i ansible/inventory.ini ansible/playbook.yaml
+                '''
+            }
+        }
+        
+        
+        /* ================= Terraform ================= */
+
+        stage("Terraform Init"){
+            steps{
+                dir('terraform/Resource'){
+                    sh ' terraform init '
+                }
+            }    
+        }
+
+        stage("Terraform Validate"){
+            steps{
+                dir('terraform/Resource'){
+                    sh ' terraform validate '
+                }
+            }    
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                dir('terraform/Resource') {
+                    withCredentials([
+                        string(credentialsId: 'vault_bootstrap_token', variable: 'TF_VAR_vault_bootstrap_token'),
+                        string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
+                        string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
+                        string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
+                        string(credentialsId: 'user_email_password', variable: 'TF_VAR_user_email_password')
+                    ]) {
+                        sh 'terraform plan -out=tfplan'
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                dir('terraform/Resource') {
+                    withCredentials([
+                        string(credentialsId: 'vault_bootstrap_token', variable: 'TF_VAR_vault_bootstrap_token'),
+                        string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
+                        string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
+                        string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
+                        string(credentialsId: 'user_email_password', variable: 'TF_VAR_user_email_password')
+                    ]) {
+                        sh 'terraform apply -auto-approve tfplan'
+                    }
+                }
+            }
+        }
+
+        /* ================= Stop Pipeline ================= */
+
+
     }
 
     /* ================= POST ACTIONS ================= */

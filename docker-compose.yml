@@ -18,10 +18,10 @@ services:
     ports:
       - "5000:5000"
     environment:
-      DB_HOST: "mysql"       # MYSQL Database host like mysql
-      DB_NAME: "portfolio_db"       # MYSQL Database Name like portfolio
-      DB_USER: "portfolio"       # MYSQL Database  User like root
-      DB_PASSWORD: "admin123"   # MYSQL DATABASE password  Password like root
+      DB_HOST: ""       # MYSQL Database host like mysql
+      DB_NAME: ""       # MYSQL Database Name like portfolio
+      DB_USER: ""       # MYSQL Database  User like root
+      DB_PASSWORD: ""   # MYSQL DATABASE password  Password like root
       EMAIL_USER: ""    # WRITE YOUR GMAIL NAME 
       EMAIL_PASS: ""    # WRITE YOUR GMAIL PASSWORD GENRATED BY GOOGLE PASSWORD APP
       ADMIN_EMAIL: ""   # WRITE YOUR GMAIL NAME   
@@ -38,11 +38,11 @@ services:
     ports:
       - "5001:80"
     environment:
-      DB_HOST: "mysql"             # MYSQL DATABASE HOST LIKE (mysql)
-      DB_NAME: "portfolio_db"             # MYSQL DATABASE NAME LIKE (portfolio)
-      DB_USER: "portfolio"             # MYSQL DATABASE USERNAME LIKE (root)
-      DB_PASSWORD: "admin123"         # MYSQL DATABASE PASSWORD LIKE (root)
-      ADMIN_PASSWORD: "admin123"      # ENTER YOUR ADMIN PANNEL PASSWORD LIKE (admin123)  
+      DB_HOST: ""             # MYSQL DATABASE HOST LIKE (mysql)
+      DB_NAME: ""             # MYSQL DATABASE NAME LIKE (portfolio)
+      DB_USER: ""             # MYSQL DATABASE USERNAME LIKE (root)
+      DB_PASSWORD: ""         # MYSQL DATABASE PASSWORD LIKE (root)
+      ADMIN_PASSWORD: ""      # ENTER YOUR ADMIN PANNEL PASSWORD LIKE (admin123)  
     networks:
       - portfolio
     volumes:
@@ -58,7 +58,7 @@ services:
     image: mysql:5.7
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: "root" # MYSQL DATABASE PASSWORD LIKE (root) 
+      MYSQL_ROOT_PASSWORD: "" # MYSQL DATABASE PASSWORD LIKE (root) 
     ports:
       - "3306:3306"
     restart: unless-stopped

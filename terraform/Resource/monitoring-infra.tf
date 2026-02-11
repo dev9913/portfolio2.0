@@ -6,10 +6,7 @@ resource "helm_release" "prometheus" {
   namespace        = "monitoring"
   create_namespace = true
 
-  depends_on = [
-    null_resource.k3s,
-    helm_release.argocd,
-  ]
+  depends_on = [helm_release.argocd]
   set = [
     {
       name  = "prometheus.service.type"

@@ -1,10 +1,7 @@
 resource "vault_policy" "argocd_notifications" {
-  name = "argocd-notifications"
-   depends_on = [
-    null_resource.k3s,
-    helm_release.vault
-  ]
-  policy = <<EOT
+  name       = "argocd-notifications"
+  depends_on = [helm_release.vault]
+  policy     = <<EOT
 path "secret/data/argocd/notifications" {
   capabilities = ["read"]
 }
@@ -12,9 +9,9 @@ EOT
 }
 
 resource "vault_kubernetes_auth_backend_role" "external_secrets" {
-   depends_on = [
-    null_resource.k3s,
-    helm_release.vault
+  depends_on = [
+    helm_release.vault,
+    vault_policy.argocd_notifications
   ]
   backend                          = "kubernetes"
   role_name                        = "external-secrets"
@@ -26,10 +23,7 @@ resource "vault_kubernetes_auth_backend_role" "external_secrets" {
 
 
 resource "helm_release" "external_secrets" {
-   depends_on = [
-    null_resource.k3s,
-    helm_release.vault
-  ]
+  depends_on = [vault_kubernetes_auth_backend_role.external_secrets]
   name       = "external-secrets"
   repository = "https://charts.external-secrets.io"
   chart      = "external-secrets"
@@ -39,9 +33,9 @@ resource "helm_release" "external_secrets" {
 }
 
 resource "kubectl_manifest" "vault_secret_store" {
-  depends_on = [ 
-  helm_release.external_secrets  
-]
+  depends_on = [
+    helm_release.external_secrets
+  ]
 
   yaml_body = <<YAML
 apiVersion: external-secrets.io/v1beta1
@@ -60,14 +54,11 @@ spec:
           role: "external-secrets"
 YAML
 
-  
+
 }
 
 resource "kubectl_manifest" "argocd_notifications_secret" {
-  depends_on = [
-  helm_release.argocd,
-  kubectl_manifest.vault_secret_store
-]
+  depends_on = [kubectl_manifest.vault_secret_store]
 
   yaml_body = <<YAML
 apiVersion: external-secrets.io/v1beta1
@@ -94,6 +85,5 @@ spec:
         property: email-password
 YAML
 
- 
 }
 

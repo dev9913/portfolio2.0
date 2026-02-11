@@ -1,9 +1,6 @@
 resource "kubernetes_namespace_v1" "project_ns" {
-  depends_on = [
-    null_resource.k3s,
-  ]
   metadata {
-    name = var.project_Namespace
+    name = var.project_namespace
   }
 }
 
@@ -19,7 +16,6 @@ resource "helm_release" "argocd" {
   wait    = true
 
   depends_on = [
-    null_resource.k3s,
     helm_release.vault
   ]
 

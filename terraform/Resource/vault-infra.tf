@@ -5,10 +5,6 @@ resource "helm_release" "vault" {
   namespace        = "vault"
   create_namespace = true
 
-  depends_on = [
-    null_resource.k3s,
-  ]
-
   set = [{
     name  = "server.dev.enabled"
     value = "true"

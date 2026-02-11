@@ -1,4 +1,4 @@
-variable "project_Namespace" {
+variable "project_namespace" {
   default = "portfolio"
   type    = string
 }
