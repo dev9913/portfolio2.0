@@ -1,10 +1,12 @@
+# ============ Portfolio Namespace ==============
 resource "kubernetes_namespace_v1" "project_ns" {
   metadata {
     name = var.project_namespace
   }
 }
 
-// Vault-install
+# ============  Install Hasicorp-Vault ==============
+
 
 resource "helm_release" "vault" {
   name             = "vault"
@@ -21,7 +23,8 @@ resource "helm_release" "vault" {
   timeout = 600
 }
 
-// Argocd install
+# ============ Install Argocd ==============
+
 
 resource "helm_release" "argocd" {
   name             = "argocd"
@@ -46,6 +49,16 @@ resource "helm_release" "argocd" {
   ]
 }
 
+# ============ Install External secrets  ==============
+ 
+resource "helm_release" "external_secrets" {
+  depends_on = [helm_release.vault,helm_release.argocd]
+  name       = "external-secrets"
+  repository = "https://charts.external-secrets.io"
+  chart      = "external-secrets"
+  namespace  = "external-secrets"
 
+  create_namespace = true
+}
 
 

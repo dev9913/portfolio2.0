@@ -24,6 +24,7 @@ resource "kubectl_manifest" "argocd_monitor" {
   ]
 }
 
+
 // Deploy Argocd External Secrets
 
 resource "kubectl_manifest" "argocd_externalsecrets" {
@@ -33,13 +34,19 @@ resource "kubectl_manifest" "argocd_externalsecrets" {
   ]
 }
 
-// Deploy Argocd  Secret-Store
+// Deploy Argocd  Secret-Store 
 
-resource "kubectl_manifest" "argocd_secret-store" {
+resource "kubectl_manifest" "argocd_secret_store" {
   yaml_body = file("${path.module}./../k8s/argocd/secret-store.yaml")
   depends_on = [
     kubectl_manifest.argocd_externalsecrets
   ]
 }
 
+// Deploy Argocd  Notifications
 
+resource "kubectl_manifest" "argocd_monitor" {
+  yaml_body = file("${path.module}./../k8s/argocd/notification.yaml")
+  depends_on = [kubectl_manifest.argocd_secret_store]
+   
+}

@@ -161,7 +161,7 @@ pipeline {
 
         stage("Terraform Init"){
             steps{
-                dir('terraform/Resource'){
+                dir('terraform'){
                     sh ' terraform init '
                 }
             }    
@@ -169,7 +169,7 @@ pipeline {
 
         stage("Terraform Validate"){
             steps{
-                dir('terraform/Resource'){
+                dir('terraform'){
                     sh ' terraform validate '
                 }
             }    
@@ -177,7 +177,7 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                dir('terraform/Resource') {
+                dir('terraform') {
                     withCredentials([
                         string(credentialsId: 'vault_bootstrap_token', variable: 'TF_VAR_vault_bootstrap_token'),
                         string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
@@ -193,7 +193,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                dir('terraform/Resource') {
+                dir('terraform') {
                     withCredentials([
                         string(credentialsId: 'vault_bootstrap_token', variable: 'TF_VAR_vault_bootstrap_token'),
                         string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),

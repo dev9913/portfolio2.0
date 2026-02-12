@@ -1,16 +1,12 @@
 server:
-  standalone:
+  dev:
     enabled: true
+  
+injector:
+  enabled: true 
 
-  ha:
-    enabled: false
-
-  dataStorage:
-    enabled: true
-    size: 1Gi
-  service:
-    type: NodePort
-    port: 8200
+ui:
+  enabled: true
 
 resources:
   requests:
@@ -20,6 +16,5 @@ resources:
     cpu: 500m
     memory: 512Mi
       
-ui:
-  enabled: true
+
 
