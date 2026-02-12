@@ -74,14 +74,14 @@
 
 # Download Helm -> /home/ubuntu/get_helm.sh
 
-- name: Download Helm 
+- name: Download Helm installer
   ansible.builtin.get_url:
-    url:  https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
     dest: "/home/{{ server_user }}/get_helm.sh"
     mode: '0700'
 
-# Run a Shell k3s.sh script to install Helm that download from url . 
-- name: Run K3s install script
-  ansible.builtin.command: sh "/home/{{ server_user }}/get_helm.sh"
+- name: Install Helm
+  ansible.builtin.command: "/home/{{ server_user }}/get_helm.sh"
   args:
     creates: /usr/local/bin/helm
+      

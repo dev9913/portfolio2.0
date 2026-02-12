@@ -4,6 +4,24 @@ resource "kubernetes_namespace_v1" "project_ns" {
   }
 }
 
+// Vault-install
+
+resource "helm_release" "vault" {
+  name             = "vault"
+  repository       = "https://helm.releases.hashicorp.com"
+  chart            = "vault"
+  namespace        = "vault"
+  create_namespace = true
+
+  values = [
+    file("${path.module}/values-vault.yaml")
+  ]
+
+  wait    = true
+  timeout = 600
+}
+
+// Argocd install
 
 resource "helm_release" "argocd" {
   name             = "argocd"
@@ -16,7 +34,8 @@ resource "helm_release" "argocd" {
   wait    = true
 
   depends_on = [
-    helm_release.vault
+    helm_release.vault,
+    vault_kv_secret_v2.app_creds
   ]
 
   set = [
@@ -27,20 +46,6 @@ resource "helm_release" "argocd" {
   ]
 }
 
-resource "kubectl_manifest" "argocd_project" {
-  yaml_body = file("${path.module}./../k8s/argocd/project.yaml")
-  depends_on = [
-    helm_release.argocd,
-  ]
-}
 
-resource "kubectl_manifest" "argocd_application" {
-  yaml_body = file("${path.module}./../k8s/argocd/application.yaml")
 
-  depends_on = [
-    helm_release.argocd,
-    kubectl_manifest.argocd_project,
-
-  ]
-}
 
