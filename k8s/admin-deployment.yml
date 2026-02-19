@@ -18,30 +18,27 @@ spec:
         vault.hashicorp.com/agent-inject-secret-env: "secret/data/creds"
         vault.hashicorp.com/agent-inject-template-env: |
           {{- with secret "secret/data/creds" -}}
-          DB_PASSWORD="{{ .Data.data.password }}"
-          DB_USER="{{ .Data.data.user }}"
-          MYSQL_ROOT_PASSWORD="{{ .Data.data.root_password }}"
+          export DB_PASSWORD="{{ .Data.data.password }}"
+          export ADMIN_PASSWORD="{{ .Data.data.password }}"
+          export DB_USER="{{ .Data.data.user }}"
+          export MYSQL_ROOT_PASSWORD="{{ .Data.data.root_password }}"
           {{- end }}
+         
     spec:
       serviceAccountName: vault-admin
       containers:
         - name: admin
-          image: dev7878/portfolio-admin:3.0.0
+          image: dev7878/portfolio-admin:3.0.0 
           imagePullPolicy: Always
           command: ["sh", "-c"]
           args:
-            - |
-              echo "Loading Vault secrets..."
-              set -a
-              . /vault/secrets/env
-              set +a
-              printenv | grep DB_
-              exec apache2-foreground
+            - source /vault/secrets/env && node server.js   
           envFrom:
             - configMapRef:
                 name: db-config
           ports:
-            - containerPort: 80
+            - containerPort: 5001
+               
           resources:
             requests:
               cpu: "100m"
@@ -51,13 +48,13 @@ spec:
               memory: 256Mi
           livenessProbe:
             httpGet:
-              path: /admin.php
-              port: 80
-            initialDelaySeconds: 10
+              path: /admin
+              port: 5001
+            initialDelaySeconds: 60
             periodSeconds: 15
           readinessProbe:
             httpGet:
-              path: /admin.php
-              port: 80
-            initialDelaySeconds: 5
+              path: /admin
+              port: 5001
+            initialDelaySeconds: 30
             periodSeconds: 10

@@ -353,6 +353,8 @@ h1, h2, h3 {
 }
 
 /* Tech */
+
+/* Tech */
 .tech-row {
   display: flex;
   flex-wrap: wrap;
@@ -365,7 +367,19 @@ h1, h2, h3 {
   border-radius: 999px;
   border: 1px solid rgba(212, 163, 115, 0.4);
   color: var(--accent-soft);
+  background-color: transparent;
+  transition: all 0.3s ease; /* Smoother and longer transition for better feel */
+  cursor: pointer; /* Indicates interactivity */
 }
+
+.tech-row span:hover {
+  background-color: var(--accent-soft);
+  color: black; /* Changed to black for better contrast and readability */
+  border-color: var(--accent-soft);
+  transform: scale(1.05); /* Slight scale-up for a "pop" effect */
+  box-shadow: 0 4px 12px rgba(212, 163, 115, 0.3); /* Soft glow shadow matching the accent color */
+}
+
 
 /* Mobile */
 @media (max-width: 600px) {
@@ -380,42 +394,43 @@ h1, h2, h3 {
 
 /*============ Skills ============*/
 
+
 .terminal-section {
-  padding: 90px 20px;
-  color: #e8e6e3;
-  background: var(--bg-soft);
-  font-family: "JetBrains Mono", monospace;
+    padding: 90px 20px;
+    color: #e8e6e3;
+    background: var(--bg-soft);
+    font-family: "JetBrains Mono", monospace;
 }
 
 .terminal-title {
-  text-align: center;
-  font-size: 2.4rem;
-  margin-bottom: 40px;
-  color: var(--accent);
+    text-align: center;
+    font-size: 2.4rem;
+    margin-bottom: 40px;
+    color: var(--accent);
 }
 
 /* ===== Window ===== */
 .terminal-window {
-  max-width: 900px;
-  margin: auto;
-  background: var(--bg-card);
-  border-radius: 14px;
-  box-shadow: 0 0 40px rgba(0,0,0,0.6);
-  overflow: hidden;
+    max-width: 900px;
+    margin: auto;
+    background: var(--bg-card);
+    border-radius: 14px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    overflow: hidden;
 }
 
 /* Header */
 .terminal-header {
-  background: #1b1a17;
-  padding: 10px;
-  display: flex;
-  gap: 8px;
+    background: #1b1a17;
+    padding: 10px;
+    display: flex;
+    gap: 8px;
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
 
 .red { background: #ff5f56; }
@@ -424,43 +439,53 @@ h1, h2, h3 {
 
 /* Body */
 .terminal-body {
-  padding: 20px;
+    padding: 20px;
+    max-height: 400px; /* Limits vertical space */
+    overflow: hidden; /* Hides scrollbar for cleaner look */
+    scroll-behavior: smooth; /* Enables smooth animated scrolling */
+}
+
+/* Hide scrollbar in webkit browsers (Chrome, Safari, etc.) for a seamless animation feel */
+.terminal-body::-webkit-scrollbar {
+    display: none;
 }
 
 .terminal-line {
-  margin-bottom: 16px;
-  animation: fadeIn 0.4s ease;
+    margin-bottom: 16px;
+    animation: fadeInOut 3.2s ease infinite; /* Loops infinitely: fades in, holds, fades out, repeats */
+    opacity: 0; /* Start hidden */
 }
 
 .prompt {
-  color: var(--accent-soft);
-  margin-right: 6px;
+    color: var(--accent-soft);
+    margin-right: 6px;
 }
 
 /* Output */
 .terminal-output {
-  margin-left: 18px;
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    margin-left: 18px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .terminal-icon {
-  font-size: 1.2rem;
+    font-size: 1.2rem;
 }
 
-/* Animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Animation: Fade in and out repeatedly */
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
+
 
 /* Mobile */
 @media (max-width: 600px) {
@@ -472,6 +497,7 @@ h1, h2, h3 {
     font-size: 0.9rem;
   }
 }
+
 
 /* ================= EXPERIENCE / TABS ================= */
 

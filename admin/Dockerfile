@@ -1,23 +1,19 @@
-FROM php:8.3-alpine
+FROM node:20-alpine
 
-ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /app
 
-RUN apk update && apk upgrade --no-cache \
- && apk add --no-cache \
-    linux-headers \
-    musl \
-    musl-dev \
-    libexpat \
-    curl \
-    git \
-    unzip \
-    vim \
- && rm -rf /var/cache/apk/*
+RUN npm install -g npm@11.9.0
+RUN apk update 
+COPY package*.json ./
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN npm install  
 
-COPY . /var/www/html/
-RUN chown -R www-data:www-data /var/www/html/
+COPY . .
 
-EXPOSE 80
-CMD ["apache2-foreground"]
+RUN addgroup -S app && adduser -S app -G app
+USER app
+
+EXPOSE 5001 
+
+CMD ["node", "server.js"]
+

@@ -19,7 +19,7 @@ services:
       - "5000:5000"
     environment:
       DB_HOST: ""       # MYSQL Database host like mysql
-      DB_NAME: ""       # MYSQL Database Name like portfolio
+      DB_NAME: ""       # MYSQL Database Name like portfolio_db
       DB_USER: ""       # MYSQL Database  User like root
       DB_PASSWORD: ""   # MYSQL DATABASE password  Password like root
       EMAIL_USER: ""    # WRITE YOUR GMAIL NAME 
@@ -36,17 +36,15 @@ services:
     container_name: admin
     build: ./admin
     ports:
-      - "5001:80"
+      - "5001:5001"
     environment:
       DB_HOST: ""             # MYSQL DATABASE HOST LIKE (mysql)
       DB_NAME: ""             # MYSQL DATABASE NAME LIKE (portfolio)
       DB_USER: ""             # MYSQL DATABASE USERNAME LIKE (root)
       DB_PASSWORD: ""         # MYSQL DATABASE PASSWORD LIKE (root)
-      ADMIN_PASSWORD: ""      # ENTER YOUR ADMIN PANNEL PASSWORD LIKE (admin123)  
+      ADMIN_PASSWORD: ""      # ENTER YOUR ADMIN PANNEL PASSWORD LIKE (admin123) 
     networks:
       - portfolio
-    volumes:
-      - ./admin:/var/www/html
     depends_on:
       db:
         condition: service_healthy

@@ -1,7 +1,11 @@
 server:
+  serviceAccount:
+    create: true    
   dev:
     enabled: true
-  
+  service:
+    type: ClusterIP 
+
 injector:
   enabled: true 
 
@@ -16,5 +20,3 @@ resources:
     cpu: 500m
     memory: 512Mi
       
-
-

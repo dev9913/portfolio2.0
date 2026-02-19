@@ -19,7 +19,6 @@ resource "kubectl_manifest" "argocd_monitor" {
   yaml_body = file("${path.module}./../k8s/argocd/monitoring.yaml")
 
   depends_on = [
-    helm_release.prometheus,
     kubectl_manifest.argocd_application
   ]
 }

@@ -22,7 +22,7 @@ const Experience = () => {
       </div>
       <div className={`tab-content ${activeTab === 'experience-tab' ? 'active' : ''}`} id="experience-tab">
         <div className="exp-card">
-          <h3>Still Finding Internship</h3>
+          <h3>Looking For Internship Opportunity .</h3>
         </div>
       </div>
     </section>

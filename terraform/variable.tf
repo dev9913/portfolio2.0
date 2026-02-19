@@ -29,3 +29,11 @@ variable "user_email_password" {
   sensitive = true
 }
 
+variable "app_user" {
+  default = "portfolio"
+  type =  string
+ }
+
+variable "kubernetes_host" {
+  default = "https://kubernetes.default.svc:443"
+}

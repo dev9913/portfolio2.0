@@ -1,11 +1,42 @@
-# ========================== Vault Secrets Mount ====================== 
+# ============ Portfolio Namespace ==============
 
-resource "vault_mount" "kvv2" {
-  path        = "secret"
-  type        = "kv-v2"
-  depends_on = [helm_release.vault]
-  description = "KV Version 2 secret engine mount"
+resource "kubernetes_namespace_v1" "portfolio" {
+  metadata {
+    name = var.project_namespace
+  }
 }
+
+# ========================== Add Secrets   ====================== 
+
+
+// Add secrets for argocd
+
+resource "vault_kv_secret_v2" "app_creds" {
+  mount = "secret"
+  name  = "creds"
+  
+  depends_on = [null_resource.start_port_forward]
+
+  data_json = jsonencode({
+    password      = var.app_password
+    user          = var.app_user
+    root_password = var.db_root_password
+  })
+}
+
+// Add Secrets for argocd notifications 
+
+resource "vault_kv_secret_v2" "argocd_notifications" {
+  mount = "secret"
+  name  = "argocd/notifications"
+  depends_on = [null_resource.start_port_forward]
+  
+  data_json = jsonencode({
+    email-username = var.user_email
+    email-password = var.user_email_password
+  })
+}
+
 
 # ========================== Policy ====================== 
 
@@ -13,7 +44,7 @@ resource "vault_mount" "kvv2" {
 
 resource "vault_policy" "k8s_policy" {
   name       = "k8s-policy"
-  depends_on = [helm_release.vault]
+  depends_on = [vault_kv_secret_v2.app_creds]
 
   policy = <<EOF
 path "secret/data/creds" {
@@ -26,7 +57,8 @@ EOF
 
 resource "vault_policy" "argocd_notifications" {
   name       = "argocd-notifications"
-  depends_on = [helm_release.vault]
+  depends_on = [vault_kv_secret_v2.argocd_notifications]
+  
   policy     = <<EOT
 path "secret/data/argocd/notifications" {
   capabilities = ["read"]
@@ -37,11 +69,66 @@ EOT
 
 # ========================== K8s Backend ====================== 
 
-//k8s backend for argocd
-
 resource "vault_auth_backend" "kubernetes" {
-  type       = "kubernetes"
-  depends_on = [vault_policy.k8s_policy]
+  depends_on = [null_resource.start_port_forward]
+  type = "kubernetes"
+}
+
+# ========================== K8s Backend Config  ======================
+
+resource "kubernetes_service_account_v1" "vault_admin" {
+  depends_on = [vault_auth_backend.kubernetes]
+  
+  metadata {
+    name      = "vault-admin"
+    namespace = kubernetes_namespace_v1.portfolio.metadata[0].name
+  }
+}
+
+resource "kubernetes_role_v1" "vault_admin_token" {
+  depends_on = [kubernetes_service_account_v1.vault_admin]
+  
+  metadata {
+    name      = "vault-admin-token"
+    namespace = kubernetes_namespace_v1.portfolio.metadata[0].name
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["serviceaccounts/token"]
+    verbs      = ["create"]
+  }
+}
+
+
+resource "kubernetes_role_binding_v1" "vault_admin_token_binding" {
+  depends_on = [kubernetes_role_v1.vault_admin_token]
+  
+  metadata {
+    name      = "vault-admin-token-binding"
+    namespace = kubernetes_namespace_v1.portfolio.metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = "vault"
+    namespace = "vault"
+  }
+
+  role_ref {
+    kind      = "Role"
+    name      = kubernetes_role_v1.vault_admin_token.metadata[0].name
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
+
+
+
+resource "vault_kubernetes_auth_backend_config" "k8s_config" {
+  depends_on = [kubernetes_role_binding_v1.vault_admin_token_binding]
+
+  backend = vault_auth_backend.kubernetes.path
+  kubernetes_host =   var.kubernetes_host
 }
 
 
@@ -72,35 +159,3 @@ resource "vault_kubernetes_auth_backend_role" "external_secrets" {
   token_ttl                        = 86400
 }
 
-# ========================== Add Secrets   ====================== 
-
-
-// Add secrets for argocd
-
-resource "vault_kv_secret_v2" "app_creds" {
-  mount = vault_mount.kvv2.path
-  name  = "creds"
-  
-  depends_on = [vault_mount.kvv2]
-
-  data_json = jsonencode({
-    password     = var.app_password
-    root_password = var.db_root_password
-  })
-}
-
-// Add Secrets for argocd notifications 
-
-resource "vault_kv_secret_v2" "argocd_notifications" {
-  mount = vault_mount.kvv2.path
-  name  = "argocd/notifications"
-
-  depends_on = [vault_mount.kvv2]
-  
-  data_json = jsonencode({
-    email-username = var.user_email
-    email-password = var.user_email_password
-  })
-}
-
-# ========================== Stop  ====================== 
