@@ -123,10 +123,10 @@ resource "kubernetes_role_binding_v1" "vault_admin_token_binding" {
 }
 
 
+# ========================== K8s Backend Auth  ====================== 
+
 
 resource "vault_kubernetes_auth_backend_config" "k8s_config" {
-  depends_on = [kubernetes_role_binding_v1.vault_admin_token_binding]
-
   backend = vault_auth_backend.kubernetes.path
   kubernetes_host =   var.kubernetes_host
 }
