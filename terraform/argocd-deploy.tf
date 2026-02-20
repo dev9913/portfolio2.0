@@ -2,20 +2,14 @@
 
 resource "kubectl_manifest" "argocd_secret_store" {
   yaml_body = file("${path.module}./k8s/argocd/secret-store.yaml")
-  
-  depends_on = [
-    null_resource.wait_for_external_secrets_crds
-  ]
-
+  depends_on = [helm_release.external_secrets]
 }
 
 // Deploy Argocd External Secrets
 
 resource "kubectl_manifest" "argocd_externalsecrets" {
-  yaml_body = file("${path.module}./k8s/argocd/externalsecret.yaml")
-  depends_on = [
-    kubectl_manifest.argocd_secret_store,
-  ]
+  yaml_body  = file("${path.module}./k8s/argocd/externalsecret.yaml")
+  depends_on = [kubectl_manifest.argocd_secret_store]
 }
 
 

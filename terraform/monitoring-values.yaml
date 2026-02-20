@@ -1,0 +1,52 @@
+prometheus:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - host: devopscloud.me
+        paths:
+          - path: /prometheus
+            pathType: Prefix
+  prometheusSpec:
+    retention: 15d
+
+grafana:
+  service:
+    type: ClusterIP
+  grafana.ini:
+    server:
+      root_url: "%(protocol)s://devopscloud.me/grafana"
+      serve_from_sub_path: true
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - host: devopscloud.me
+        paths:
+          - path: /grafana
+            pathType: Prefix
+  persistence:
+    enabled: true
+    size: 3Gi
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+alertmanager:
+  service:
+    type: ClusterIP
+
+kubeEtcd:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
