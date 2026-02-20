@@ -4,7 +4,7 @@ resource "kubectl_manifest" "argocd_secret_store" {
   yaml_body = file("${path.module}./k8s/argocd/secret-store.yaml")
   
   depends_on = [
-    helm_release.external_secrets
+    null_resource.wait_for_external_secrets_crds
   ]
 
 }
