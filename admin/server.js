@@ -16,7 +16,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(
   session({
-    secret: process.env.ADMIN_PASSWORD || "admin",
+    secret: process.env.ADMIN_PASSWORD ,
     resave: false,
     saveUninitialized: false,
   })
