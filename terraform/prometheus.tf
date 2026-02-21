@@ -1,4 +1,6 @@
-resource "helm_release" "monitoring" {
+# ============ Install Prometheus  ==============
+
+resource "helm_release" "prometheus" {
   name             = "kube-prometheus-stack"
   repository       = "https://prometheus-community.github.io/helm-charts"
   chart            = "kube-prometheus-stack"
@@ -10,4 +12,14 @@ resource "helm_release" "monitoring" {
 
   timeout = 600
   wait    = true
+}
+
+// Deploy Argocd Monitor
+
+resource "kubectl_manifest" "argocd_monitor" {
+  yaml_body = file("${path.module}./k8s/argocd/monitoring.yaml")
+
+  depends_on = [
+    helm_release.prometheus , kubectl_manifest.argocd_application
+  ]
 }

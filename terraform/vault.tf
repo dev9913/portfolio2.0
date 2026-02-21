@@ -46,9 +46,7 @@ resource "null_resource" "start_port_forward" {
 // Stop Vault Port_Forward
 resource "null_resource" "stop_port_forward" {
 
-  depends_on = [
-    vault_kubernetes_auth_backend_role.external_secrets 
-  ]
+  depends_on = [kubectl_manifest.argocd_monitor]
 
   provisioner "local-exec" {
     command = <<EOT
@@ -59,4 +57,5 @@ resource "null_resource" "stop_port_forward" {
     EOT
   }
 }
+
 

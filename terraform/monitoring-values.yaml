@@ -1,20 +1,19 @@
 prometheus:
   service:
-    type: ClusterIP
+    type: NodePort
   ingress:
     enabled: true
     ingressClassName: traefik
     hosts:
-      - host: devopscloud.me
-        paths:
-          - path: /prometheus
-            pathType: Prefix
+      - devopscloud.me
+    paths:
+      - /prometheus
   prometheusSpec:
     retention: 15d
 
 grafana:
   service:
-    type: ClusterIP
+    type: NodePort
   grafana.ini:
     server:
       root_url: "%(protocol)s://devopscloud.me/grafana"
@@ -23,10 +22,9 @@ grafana:
     enabled: true
     ingressClassName: traefik
     hosts:
-      - host: devopscloud.me
-        paths:
-          - path: /grafana
-            pathType: Prefix
+      - devopscloud.me
+    paths:
+      - /grafana
   persistence:
     enabled: true
     size: 3Gi
@@ -42,11 +40,4 @@ alertmanager:
   service:
     type: ClusterIP
 
-kubeEtcd:
-  enabled: false
 
-kubeControllerManager:
-  enabled: false
-
-kubeScheduler:
-  enabled: false

@@ -12,7 +12,7 @@ resource "helm_release" "argocd" {
   wait    = true
 
   depends_on = [
-    null_resource.stop_port_forward
+    null_resource.start_port_forward
   ]
 
   set = [
@@ -23,34 +23,18 @@ resource "helm_release" "argocd" {
   ]
 }
 
-# ============ Install External secrets  ==============
- 
-
-
-resource "helm_release" "external_secrets" {
-  depends_on = [helm_release.argocd]
-
-  name       = "external-secrets"
-  repository = "https://charts.external-secrets.io"
-  chart      = "external-secrets"
-  namespace  = "external-secrets"
-
-  create_namespace = true
-  wait             = true
-  timeout          = 300
+// Deploy Argocd Project 
+resource "kubectl_manifest" "argocd_project" {
+  yaml_body = file("${path.module}./k8s/argocd/project.yaml")
+  depends_on = [kubectl_manifest.argocd_notification]
 }
 
-resource "null_resource" "wait_for_external_secrets_crds" {
-  depends_on = [helm_release.external_secrets]
+// Deploy Argocd Application
+resource "kubectl_manifest" "argocd_application" {
+  yaml_body = file("${path.module}./k8s/argocd/application.yaml")
 
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "Waiting for External Secrets CRDs..."
-      until kubectl get crd clustersecretstores.external-secrets.io >/dev/null 2>&1; do
-        sleep 3
-      done
-      echo "CRDs ready."
-    EOT
-  }
+  depends_on = [
+    kubectl_manifest.argocd_project
+  ]
 }
 
