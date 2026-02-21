@@ -23,19 +23,12 @@ resource "helm_release" "argocd" {
   ]
 }
 
-// Deploy Argocd  Notifications
-
-resource "kubectl_manifest" "argocd_notification" {
-  yaml_body = file("${path.module}./k8s/argocd/notification.yaml")
-  depends_on = [helm_release.argocd]
-   
-}
 
 
 // Deploy Argocd Project 
 resource "kubectl_manifest" "argocd_project" {
   yaml_body = file("${path.module}./k8s/argocd/project.yaml")
-  depends_on = [kubectl_manifest.argocd_notification]
+  depends_on = [helm_release.argocd]
 }
 
 // Deploy Argocd Application

@@ -24,19 +24,6 @@ resource "vault_kv_secret_v2" "app_creds" {
   })
 }
 
-// Add Secrets for argocd notifications
-
-resource "vault_kv_secret_v2" "argocd_notifications" {
-  mount = "secret"
-  name  = "argocd/notifications"
-  depends_on = [null_resource.start_port_forward]
-  
-  data_json = jsonencode({
-    email-username = var.user_email
-    email-password = var.user_email_password
-  })
-}
-
 
 # ========================== Policy ====================== 
 
@@ -53,18 +40,6 @@ path "secret/data/creds" {
 EOF
 }
 
-//k8s backend policy for argocd notifications
-
-resource "vault_policy" "argocd_notifications" {
-  name       = "argocd-notifications"
-  depends_on = [vault_kv_secret_v2.argocd_notifications]
-  
-  policy     = <<EOT
-path "secret/data/argocd/notifications" {
-  capabilities = ["read"]
-}
-EOT
-}
 
 
 # ========================== K8s Backend ====================== 
@@ -148,14 +123,4 @@ resource "vault_kubernetes_auth_backend_role" "k8s_role" {
 }
 
 
-// k8s backend auth for argocd notifications 
-resource "vault_kubernetes_auth_backend_role" "external_secrets" {
-  depends_on                       = [vault_policy.argocd_notifications]
-  backend                          = vault_auth_backend.kubernetes.path
-  role_name                        = "external-secrets"
-  bound_service_account_names      = ["external-secrets"]
-  bound_service_account_namespaces = ["external-secrets"]
-  token_policies                   = [vault_policy.argocd_notifications.name]
-  token_ttl                        = 86400
-}
 

@@ -46,7 +46,7 @@ resource "null_resource" "start_port_forward" {
 // Stop Vault Port_Forward
 resource "null_resource" "stop_port_forward" {
 
-  depends_on = [kubectl_manifest.argocd_monitor]
+  depends_on = [kubectl_manifest.argocd_application]
 
   provisioner "local-exec" {
     command = <<EOT

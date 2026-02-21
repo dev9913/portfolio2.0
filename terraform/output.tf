@@ -14,9 +14,4 @@ output "argocd_admin_password" {
   sensitive   = true
 }
 
-output "grafana_admin_password" {
-  description = "Command to get Grafana admin password"
-  value       = "kubectl get secret -n monitoring kube-prometheus-stack-grafana -o jsonpath='{.data.admin-password}' | base64 -d"
-  sensitive   = true
-}
 
