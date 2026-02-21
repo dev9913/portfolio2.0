@@ -24,7 +24,7 @@ resource "vault_kv_secret_v2" "app_creds" {
   })
 }
 
-// Add Secrets for argocd notifications 
+// Add Secrets for argocd notifications
 
 resource "vault_kv_secret_v2" "argocd_notifications" {
   mount = "secret"

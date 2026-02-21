@@ -1,3 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-server
+  namespace: argocd
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "external-secrets"
+    vault.hashicorp.com/agent-inject-secret-email-username: "secret/data/argocd/notifications#email-username"
+    vault.hashicorp.com/agent-inject-secret-email-password: "secret/data/argocd/notifications#email-password"
+    vault.hashicorp.com/agent-inject-template-email-username: |
+      {{- with secret "secret/data/argocd/notifications" -}}
+      export EMAIL_USERNAME="{{ .Data.data.email-username }}"
+      {{- end }}
+    vault.hashicorp.com/agent-inject-template-email-password: |
+      {{- with secret "secret/data/argocd/notifications" -}}
+      export EMAIL_PASSWORD="{{ .Data.data.email-password }}"
+      {{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-server
+    spec:
+      containers:
+        - name: argocd-server
+          image: argoproj/argocd:v2.8.7
+          ports:
+            - containerPort: 8080
+
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,16 +41,14 @@ metadata:
 data:
   context: |
     argocdUrl: "https://argocd-server.argocd.svc"
-
   service.email: |
-    username: $email-username
-    password: $email-password
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
     host: smtp.gmail.com
     port: 465
-    from: $email-username
+    from: ${EMAIL_USERNAME}
     ssl: true
     insecure_skip_verify: false
-
   template.email-health-degraded: |
     email:
       subject: "[ArgoCD] {{.app.metadata.name}} health is {{.app.status.health.status}}"
@@ -28,7 +61,6 @@ data:
         Health message: {{.app.status.health.message}}
         Last operation: {{ if .app.operationState }}{{ .app.operationState.phase }}{{ else }}<none>{{ end }}
         Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
-
   template.email-deployed: |
     email:
       subject: "[ArgoCD] {{.app.metadata.name}} successfully deployed"
@@ -41,12 +73,9 @@ data:
         Last operation: {{ if .app.operationState }}{{ .app.operationState.phase }}{{ else }}<none>{{ end }}
         Finished at: {{ if .app.operationState }}{{ .app.operationState.finishedAt }}{{ end }}
         Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
-
   trigger.on-health-degraded: |
     - when: app.status.health.status == 'Degraded'
       send: [email-health-degraded]
-
   trigger.on-deployed: |
     - when: app.status.operationState.phase == 'Succeeded' && app.status.health.status == 'Healthy'
       send: [email-deployed]
-
