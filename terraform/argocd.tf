@@ -28,7 +28,7 @@ resource "helm_release" "argocd" {
 // Deploy Argocd Project 
 resource "kubectl_manifest" "argocd_project" {
   yaml_body = file("${path.module}./k8s/argocd/project.yaml")
-  depends_on = [helm_release.argocd]
+  depends_on = [helm_release.argocd, kubectl_manifest.argocd_alert_notify]
 }
 
 // Deploy Argocd Application
