@@ -1,0 +1,41 @@
+// APP Namespace
+resource "kubernetes_namespace_v1" "portfolio_ns" {
+  metadata {
+    name = var.project_namespace
+  }
+}
+
+// Argocd App Secret
+resource "kubernetes_secret_v1" "argocd_app_secret" {
+  depends_on = [kubernetes_namespace_v1.portfolio_ns]
+
+  metadata {
+    name      = "portfolio-secret"
+    namespace = var.project_namespace
+  }
+
+  data = {
+    DB_PASSWORD         = var.app_password
+    DB_USER             = var.app_user
+    MYSQL_ROOT_PASSWORD = var.db_root_password
+  }
+
+  type = "Opaque"
+}
+
+// Argocd Notification Secret
+resource "kubernetes_secret_v1" "argocd_notifications_secret" {
+  depends_on = [helm_release.argocd]
+
+  metadata {
+    name      = "argocd-notifications-secret"
+    namespace = "argocd"
+  }
+
+  data = {
+    email-username = var.user_email
+    email-password = var.user_email_password
+  }
+
+  type = "Opaque"
+}

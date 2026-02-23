@@ -13,12 +13,6 @@ variable "db_root_password" {
   sensitive = true
 }
 
-variable "vault_bootstrap_token" {
-  type      = string
-  sensitive = true
-}
-
-
 variable "user_email" {
   type      = string
   sensitive = true
@@ -34,6 +28,3 @@ variable "app_user" {
   type =  string
  }
 
-variable "kubernetes_host" {
-  default = "https://kubernetes.default.svc:443"
-}

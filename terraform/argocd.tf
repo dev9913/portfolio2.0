@@ -1,42 +1,46 @@
-# ============ Install Argocd ==============
+// Create ArgoCd Namespace
+resource "kubernetes_namespace_v1" "argocd_ns" {
+  metadata {
+    name = "argocd"
+  }
+}
 
+
+// Install Argo-CD
 
 resource "helm_release" "argocd" {
   name             = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   chart            = "argo-cd"
   namespace        = "argocd"
-  create_namespace = true
 
   timeout = 600
   wait    = true
+  atomic            = true
+  cleanup_on_fail   = true
 
-  depends_on = [
-    null_resource.start_port_forward
-  ]
-
-  set = [
-    {
-      name  = "service.type"
-      value = "ClusterIP"
-    }
+  depends_on = [ kubernetes_namespace_v1.argocd_ns , kubernetes_secret_v1.argocd_app_secret]
+  values = [
+    file("${path.module}/argo-value.yaml")
   ]
 }
 
-
+// Deploy Argocd Notifications 
+resource "kubectl_manifest" "argocd_notify" {
+  yaml_body = file("${path.module}./argocd/notify.yaml")
+  depends_on = [kubernetes_secret_v1.argocd_notifications_secret]
+}
 
 // Deploy Argocd Project 
 resource "kubectl_manifest" "argocd_project" {
-  yaml_body = file("${path.module}./k8s/argocd/project.yaml")
-  depends_on = [helm_release.argocd]
+  yaml_body = file("${path.module}./argocd/project.yaml")
+  depends_on = [kubectl_manifest.argocd_notify]
 }
 
 // Deploy Argocd Application
 resource "kubectl_manifest" "argocd_application" {
-  yaml_body = file("${path.module}./k8s/argocd/application.yaml")
+  yaml_body = file("${path.module}./argocd/application.yaml")
 
-  depends_on = [
-    kubectl_manifest.argocd_project
-  ]
+  depends_on = [kubectl_manifest.argocd_project]
 }
 

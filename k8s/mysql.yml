@@ -13,27 +13,18 @@ spec:
     metadata:
       labels:
         app: mysql
-      annotations:
-         vault.hashicorp.com/agent-inject: "true"
-         vault.hashicorp.com/role: "k8s-role" 
-         vault.hashicorp.com/agent-inject-secret-env: "secret/data/creds"
-         vault.hashicorp.com/agent-inject-template-env: |
-            {{- with secret "secret/data/creds" -}}
-            export DB_PASSWORD="{{ .Data.data.password }}"
-            export DB_USER="{{ .Data.data.user }}"
-            export MYSQL_ROOT_PASSWORD="{{ .Data.data.root_password }}"
-            {{- end }}
-
     spec:
-      serviceAccountName: vault-admin
       containers:
         - name: mysql
-          image: mysql:5.7
-          command: ["sh", "-c"]
-          args:
-            - source /vault/secrets/env && exec docker-entrypoint.sh mysqld
+          image: mysql:5.7           
           ports:
             - containerPort: 3306
+          env: 
+            - name: MYSQL_ROOT_PASSWORD  # PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: MYSQL_ROOT_PASSWORD     
           volumeMounts:
             - name: mysql
               mountPath: /var/lib/mysql

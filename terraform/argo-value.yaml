@@ -1,0 +1,33 @@
+server:
+  service:
+    type: ClusterIP
+  metrics:
+    enabled: true
+    service:
+      type: ClusterIP
+      portName: metrics
+
+repoServer:
+  metrics:
+    enabled: true
+    service:
+      type: ClusterIP
+      portName: metrics
+
+applicationController:
+  metrics:
+    enabled: true
+    service:
+      type: ClusterIP
+      portName: metrics
+
+redis:
+  metrics:
+    enabled: true
+    service:
+      type: ClusterIP
+      portName: metrics
+
+notifications:
+  enabled: true
+    

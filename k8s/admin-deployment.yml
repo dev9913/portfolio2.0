@@ -11,31 +11,42 @@ spec:
   template:
     metadata:
       labels:
-        app: admin
-      annotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "k8s-role"
-        vault.hashicorp.com/agent-inject-secret-env: "secret/data/creds"
-        vault.hashicorp.com/agent-inject-template-env: |
-          {{- with secret "secret/data/creds" -}}
-          export DB_PASSWORD="{{ .Data.data.password }}"
-          export ADMIN_PASSWORD="{{ .Data.data.password }}"
-          export DB_USER="{{ .Data.data.user }}"
-          export MYSQL_ROOT_PASSWORD="{{ .Data.data.root_password }}"
-          {{- end }}
-         
+        app: admin         
     spec:
-      serviceAccountName: vault-admin
       containers:
         - name: admin
           image: dev7878/portfolio-admin:3.0.0 
           imagePullPolicy: Always
-          command: ["sh", "-c"]
-          args:
-            - source /vault/secrets/env && node server.js   
-          envFrom:
-            - configMapRef:
-                name: db-config
+          env:
+            - name: DB_HOST   # HOST 
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_HOST
+            - name: DB_NAME # DB NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_NAME
+
+            - name: DB_USER  # DB USER 
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: DB_USER
+
+            - name: DB_PASSWORD # DB USER PASS
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: DB_PASSWORD
+
+            - name: ADMIN_PASSWORD # Admin Password 
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: DB_PASSWORD
+                       
           ports:
             - containerPort: 5001
                
