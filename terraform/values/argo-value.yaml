@@ -1,0 +1,24 @@
+server:
+  service:
+    type: ClusterIP
+  metrics:
+    enabled: true
+    port: 8082
+    service:
+      type: ClusterIP
+      port: 8082
+
+repoServer:
+  metrics:
+    enabled: true
+    port: 8084
+    service:
+      type: ClusterIP
+      port: 8084
+controller:
+  metrics:
+    enabled: true
+    port: 8082
+    service:
+      type: ClusterIP
+      port: 8082      

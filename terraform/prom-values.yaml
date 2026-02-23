@@ -1,7 +1,0 @@
-prometheus:
-  prometheusSpec:
-    serviceMonitorSelector:
-      matchLabels:
-        release: kube-prometheus-stack
-    serviceMonitorNamespaceSelector:
-      any: true

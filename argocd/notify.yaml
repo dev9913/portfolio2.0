@@ -3,68 +3,120 @@ kind: ConfigMap
 metadata:
   name: argocd-notifications-cm
   namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-notifications
 data:
-
-  context: |
-    argocdUrl: "http://<your-argocd-url>:8080"
-
   service.email: |
-    host: smtp.gmail.com
-    port: 587
-    username: $email-username
-    password: $email-password
-    from: $email-username
-
-  subscriptions: |
-    - recipients:
-        - email: yourgmail@gmail.com
-      triggers:
-        - on-deployed
-        - on-health-degraded
-        - on-outofsync
-
-  template.email-deployed: |
     email:
-      subject: "[ArgoCD] {{.app.metadata.name}} successfully deployed 🎉"
-    message: |
-      ✅ Application: {{.app.metadata.name}}
-      Namespace: {{.app.metadata.namespace}}
-      Sync status: {{.app.status.sync.status}}
-      Revision: {{.app.status.sync.revision}}
-      Health status: {{.app.status.health.status}}
-      Finished at: {{ if .app.operationState }}{{ .app.operationState.finishedAt }}{{ end }}
-      Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
+      host: smtp.gmail.com
+      port: 587
+      username: $email-username
+      password: $email-password
+      from: $email-username
+      tls: true
 
-  template.email-health-degraded: |
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-templates
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-notifications
+data:
+  # Sync Failed Template
+  template.sync-failed: |
     email:
-      subject: "[ArgoCD] {{.app.metadata.name}} health is {{.app.status.health.status}} 🚨"
-    message: |
-      🚨 Application: {{.app.metadata.name}}
-      Namespace: {{.app.metadata.namespace}}
-      Sync status: {{.app.status.sync.status}}
-      Health status: {{.app.status.health.status}}
-      Health message: {{.app.status.health.message}}
-      Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
+      subject: "[ArgoCD] Sync Failed: {{.app.metadata.name}}"
+      body: |
+        <h3>Sync Failed Notification</h3>
+        <p><strong>Application:</strong> {{.app.metadata.name}}</p>
+        <p><strong>Namespace:</strong> {{.app.metadata.namespace}}</p>
+        <p><strong>Status:</strong> {{.app.status.sync.status}}</p>
+        <p><strong>Message:</strong> {{.app.status.sync.message}}</p>
+        <p><strong>Revision:</strong> {{.app.status.sync.revision}}</p>
+        <p><a href="{{.context.rawURL}}/applications/{{.app.metadata.name}}">View in ArgoCD</a></p>
 
-  template.email-outofsync: |
+  # Sync Succeeded Template
+  template.sync-succeeded: |
     email:
-      subject: "[ArgoCD] {{.app.metadata.name}} is OUT OF SYNC ⚠️"
-    message: |
-      ⚠️ Application: {{.app.metadata.name}}
-      Namespace: {{.app.metadata.namespace}}
-      Sync status: {{.app.status.sync.status}}
-      Desired Revision: {{.app.status.sync.revision}}
-      Health status: {{.app.status.health.status}}
-      Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
+      subject: "[ArgoCD] Sync Succeeded: {{.app.metadata.name}}"
+      body: |
+        <h3>Sync Succeeded Notification</h3>
+        <p><strong>Application:</strong> {{.app.metadata.name}}</p>
+        <p><strong>Namespace:</strong> {{.app.metadata.namespace}}</p>
+        <p><strong>Successfully synced to revision:</strong> {{.app.status.sync.revision}}</p>
+        <p><a href="{{.context.rawURL}}/applications/{{.app.metadata.name}}">View in ArgoCD</a></p>
 
-  trigger.on-deployed: |
-    - when: app.status.operationState.phase == 'Succeeded' and app.status.health.status == 'Healthy'
-      send: [email-deployed]
+  # Health Degraded Template
+  template.health-degraded: |
+    email:
+      subject: "[ArgoCD] Health Degraded: {{.app.metadata.name}}"
+      body: |
+        <h3>Health Degraded Notification</h3>
+        <p><strong>Application:</strong> {{.app.metadata.name}}</p>
+        <p><strong>Current Health:</strong> {{.app.status.health.status}}</p>
+        <p><strong>Message:</strong> {{.app.status.health.message}}</p>
+        <p><a href="{{.context.rawURL}}/applications/{{.app.metadata.name}}">View in ArgoCD</a></p>
 
-  trigger.on-health-degraded: |
+  # Application Deleted Template
+  template.app-deleted: |
+    email:
+      subject: "[ArgoCD] Application Deleted: {{.app.metadata.name}}"
+      body: |
+        <h3>Application Deleted</h3>
+        <p>The following ArgoCD application was deleted:</p>
+        <p><strong>Name:</strong> {{.app.metadata.name}}</p>
+        <p><strong>Namespace:</strong> {{.app.metadata.namespace}}</p>
+
+  # Sync Started Template
+  template.sync-started: |
+    email:
+      subject: "[ArgoCD] Sync Started: {{.app.metadata.name}}"
+      body: |
+        <h3>Sync Started Notification</h3>
+        <p><strong>Application:</strong> {{.app.metadata.name}}</p>
+        <p><strong>Namespace:</strong> {{.app.metadata.namespace}}</p>
+        <p><strong>Revision:</strong> {{.app.status.sync.revision}}</p>
+        <p><a href="{{.context.rawURL}}/applications/{{.app.metadata.name}}">View in ArgoCD</a></p>
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-triggers
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-notifications
+data:
+  # Trigger: Sync Failed
+  trigger.sync-failed: |
+    - when: app.status.sync.status == 'Failed'
+      send: [sync-failed]
+
+  # Trigger: Sync Succeeded
+  trigger.sync-succeeded: |
+    - when: app.status.sync.status == 'Succeeded'
+      send: [sync-succeeded]
+
+  # Trigger: Sync Started
+  trigger.sync-started: |
+    - when: app.status.sync.status == 'Running'
+      send: [sync-started]
+
+  # Trigger: Health Degraded
+  trigger.health-degraded: |
     - when: app.status.health.status == 'Degraded'
-      send: [email-health-degraded]
+      send: [health-degraded]
 
-  trigger.on-outofsync: |
-    - when: app.status.sync.status == 'OutOfSync'
-      send: [email-outofsync]
+  # Trigger: Health Healthy
+  trigger.health-healthy: |
+    - when: app.status.health.status == 'Healthy'
+      send: [sync-succeeded]
+
+  # Trigger: Application Deleted
+  trigger.on-sync-deleted: |
+    - when: app.metadata.deletionTimestamp != nil
+      send: [app-deleted]

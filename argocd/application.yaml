@@ -3,6 +3,24 @@ apiVersion: argoproj.io/v1alpha1
 metadata:
   name: portfolio
   namespace: argocd
+  annotations:
+    # Sync Failure Notifications
+    notifications.argoproj.io/subscribe.on-sync-failed.email: "devjangig@gmail.com"
+    
+    # Sync Success Notifications
+    notifications.argoproj.io/subscribe.on-sync-succeeded.email: "devjangig@gmail.com"
+    
+    # Sync Started Notifications
+    notifications.argoproj.io/subscribe.on-sync-started.email: "devjangig@gmail.com"
+    
+    # Health Degraded Notifications
+    notifications.argoproj.io/subscribe.on-health-degraded.email: "devjangig@gmail.com"
+    
+    # Health Healthy Notifications
+    notifications.argoproj.io/subscribe.on-health-healthy.email: "devjangig@gmail.com"
+    
+    # Application Deleted Notifications
+    notifications.argoproj.io/subscribe.on-sync-deleted.email: "devjangig@gmail.com"
 spec:
   project: portfolio
   source:

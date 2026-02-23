@@ -1,0 +1,45 @@
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    retentionSize: 10GB
+
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+            - argocd
+            - monitoring
+            - default
+            
+    alerting:
+      alertmanagers:
+        - namespace: monitoring
+          name: prometheus-kube-prometheus-stack-alertmanager
+          port: web
+    evaluationInterval: 30s
+    scrapeInterval: 30s
+    externalLabels:
+      cluster: "argocd-cluster"
+      environment: "production"
+
+
+
+
+crds:
+  enabled: true
+  keep: true
+rbac:
+  create: true
+  namespaced: false
+serviceAccounts:
+  prometheus:
+    create: true
+    name: prometheus
+  alertmanager:
+    create: true
+    name: alertmanager
+  grafana:
+    create: true
+    name: grafana

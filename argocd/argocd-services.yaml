@@ -1,0 +1,58 @@
+# Service for ArgoCD Server Metrics
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server-metrics
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-server
+    app.kubernetes.io/component: metrics
+spec:
+  ports:
+    - name: metrics
+      port: 8082
+      targetPort: 8082
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: argocd-server
+  type: ClusterIP
+
+---
+# Service for ArgoCD Repo Server Metrics
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-repo-server-metrics
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-repo-server
+    app.kubernetes.io/component: metrics
+spec:
+  ports:
+    - name: metrics
+      port: 8084
+      targetPort: 8084
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: argocd-repo-server
+  type: ClusterIP
+
+---
+# Service for ArgoCD Controller Metrics
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-controller-metrics
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-application-controller
+    app.kubernetes.io/component: metrics
+spec:
+  ports:
+    - name: metrics
+      port: 8082
+      targetPort: 8082
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: argocd-application-controller
+  type: ClusterIP
