@@ -1,29 +1,30 @@
-// Create ArgoCd Namespace
 resource "kubernetes_namespace_v1" "argocd_ns" {
   metadata {
     name = "argocd"
   }
 }
 
-
-// Install Argo-CD
-
 resource "helm_release" "argocd" {
-  name             = "argocd"
-  repository       = "https://argoproj.github.io/argo-helm"
-  chart            = "argo-cd"
-  namespace        = "argocd"
+  name       = "argocd"
+  repository = "https://argoproj.github.io/argo-helm"
+  chart      = "argo-cd"
+  namespace  = kubernetes_namespace_v1.argocd_ns.metadata[0].name
 
-  timeout = 600
-  wait    = true
-  atomic            = true
-  cleanup_on_fail   = true
+  create_namespace = false
 
-  depends_on = [ kubernetes_namespace_v1.argocd_ns ]
   values = [
     file("${path.module}/values/argo-value.yaml")
   ]
+
+  depends_on = [
+    helm_release.kube_prometheus_stack
+  ]
+
+  wait    = true
+  timeout = 600
 }
+
+
 
 // Deploy Argocd Notify
 resource "kubectl_manifest" "argocd_notify" {

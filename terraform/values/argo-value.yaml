@@ -1,24 +1,29 @@
 server:
-  service:
-    type: ClusterIP
   metrics:
     enabled: true
-    port: 8082
-    service:
-      type: ClusterIP
-      port: 8082
+    serviceMonitor:
+      enabled: true
+
+controller:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
 
 repoServer:
   metrics:
     enabled: true
-    port: 8084
-    service:
-      type: ClusterIP
-      port: 8084
-controller:
+    serviceMonitor:
+      enabled: true
+
+applicationSet:
   metrics:
     enabled: true
-    port: 8082
-    service:
-      type: ClusterIP
-      port: 8082      
+    serviceMonitor:
+      enabled: true
+
+notifications:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
