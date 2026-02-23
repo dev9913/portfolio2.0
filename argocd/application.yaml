@@ -4,6 +4,7 @@ metadata:
   name: portfolio
   namespace: argocd
   annotations:
+    notifications.argoproj.io/subscribe.on-outofsync.email: "devjangig@gmail.com"
     # Sync Failure Notifications
     notifications.argoproj.io/subscribe.on-sync-failed.email: "devjangig@gmail.com"
     

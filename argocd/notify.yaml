@@ -25,6 +25,17 @@ metadata:
   labels:
     app.kubernetes.io/name: argocd-notifications
 data:
+
+  template.email-outofsync: |
+    email:
+      subject: "[ArgoCD] {{.app.metadata.name}} is OUT OF SYNC ⚠️"
+      message: |
+        Application: {{.app.metadata.name}}
+        Namespace: {{.app.metadata.namespace}}
+        Sync Status: {{.app.status.sync.status}}
+        Desired Revision: {{.app.status.sync.revision}}
+        Health Status: {{.app.status.health.status}}
+        Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
   # Sync Failed Template
   template.sync-failed: |
     email:
@@ -91,6 +102,9 @@ metadata:
   labels:
     app.kubernetes.io/name: argocd-notifications
 data:
+  trigger.on-outofsync: |
+    - when: app.status.sync.status == 'OutOfSync'
+      send: [email-outofsync]
   # Trigger: Sync Failed
   trigger.sync-failed: |
     - when: app.status.sync.status == 'Failed'
