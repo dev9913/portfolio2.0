@@ -28,7 +28,7 @@ resource "helm_release" "argocd" {
 // Deploy Argocd Notify
 resource "kubectl_manifest" "argocd_notify" {
   yaml_body = file("${path.module}./argocd/notify.yaml")
-  depends_on = [helm_release.argocd ,kubernetes_secret.argocd_notifications ]
+  depends_on = [helm_release.argocd ,kubernetes_secret_v1.argocd_notifications ]
 }
 
 // Deploy Argocd Project 
