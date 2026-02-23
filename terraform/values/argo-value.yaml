@@ -23,6 +23,13 @@ applicationSet:
       enabled: true
 
 notifications:
+  enabled: true
+  secret:
+    create: false
+    name: argocd-notifications-secret
+  cm:
+    create: false
+
   metrics:
     enabled: true
     serviceMonitor:
