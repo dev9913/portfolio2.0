@@ -3,31 +3,25 @@ server:
     type: ClusterIP
   metrics:
     enabled: true
-    service:
-      type: ClusterIP
-      portName: metrics
+    serviceMonitor:
+      enabled: true
+
+controller:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
 
 repoServer:
   metrics:
     enabled: true
-    service:
-      type: ClusterIP
-      portName: metrics
-
-applicationController:
-  metrics:
-    enabled: true
-    service:
-      type: ClusterIP
-      portName: metrics
-
-redis:
-  metrics:
-    enabled: true
-    service:
-      type: ClusterIP
-      portName: metrics
+    serviceMonitor:
+      enabled: true
 
 notifications:
   enabled: true
-    
+  secret:
+    create: false
+    name: argocd-notifications-secret
+  cm:
+    create: false   

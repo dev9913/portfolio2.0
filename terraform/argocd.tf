@@ -25,16 +25,11 @@ resource "helm_release" "argocd" {
   ]
 }
 
-// Deploy Argocd Notifications 
-resource "kubectl_manifest" "argocd_notify" {
-  yaml_body = file("${path.module}./argocd/notify.yaml")
-  depends_on = [kubernetes_secret_v1.argocd_notifications_secret]
-}
 
 // Deploy Argocd Project 
 resource "kubectl_manifest" "argocd_project" {
   yaml_body = file("${path.module}./argocd/project.yaml")
-  depends_on = [kubectl_manifest.argocd_notify]
+  depends_on = [kubernetes_config_map_v1.argocd_notifications_cm]
 }
 
 // Deploy Argocd Application

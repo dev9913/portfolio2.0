@@ -25,8 +25,3 @@ resource "helm_release" "monitoring" {
   ]
 }
 
-// Deploy Argocd Monitoring 
-resource "kubectl_manifest" "argocd_monitoring" {
-  yaml_body = file("${path.module}./argocd/monitoring.yaml")
-  depends_on = [helm_release.monitoring , kubectl_manifest.argocd_application]
-}
