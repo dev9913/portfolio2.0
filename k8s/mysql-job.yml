@@ -22,15 +22,17 @@ data:
       replied_message TEXT NULL,
       date DATE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
----
 
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: mysql-init-job
   namespace: portfolio
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
-  ttlSecondsAfterFinished: 5
   backoffLimit: 3
   template:
     spec:
@@ -39,38 +41,40 @@ spec:
         - name: mysql-init
           image: mysql:5.7
           env:
-            - name: DB_HOST   # HOST 
+            - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
                   name: db-config
                   key: DB_HOST
-              
-            - name: ROOT_PASSWORD  # DB PASS
+
+            - name: ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: portfolio-secret
                   key: MYSQL_ROOT_PASSWORD
 
-            - name: DB_NAME # DB NAME
+            - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
                   name: db-config
                   key: DB_NAME
 
-            - name: DB_USER  # DB USER 
+            - name: DB_USER
               valueFrom:
                 secretKeyRef:
                   name: portfolio-secret
                   key: DB_USER
 
-            - name: DB_PASSWORD # DB USER PASS
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: portfolio-secret
                   key: DB_PASSWORD
+
           volumeMounts:
             - name: init-sql
               mountPath: /sql
+
           command:
             - sh
             - -c
@@ -89,7 +93,8 @@ spec:
 
               echo "Running init.sql..."
               mysql -h "$DB_HOST" -uroot -p"$ROOT_PASSWORD" < /tmp/init.sql
+
       volumes:
         - name: init-sql
           configMap:
-            name: mysql-init-sql              
+            name: mysql-init-sql

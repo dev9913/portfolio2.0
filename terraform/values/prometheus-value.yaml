@@ -3,3 +3,4 @@ prometheus:
     serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector:
       any: true
+

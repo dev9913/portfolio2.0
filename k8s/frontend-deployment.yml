@@ -1,17 +1,29 @@
-kind: Deployment
-apiVersion: apps/v1
+kind: Rollout
+apiVersion: argoproj.io/v1alpha1
 metadata:
   name: frontend
   namespace: portfolio
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    canary:
+      stableService: frontend-stable
+      canaryService: frontend-canary
+      trafficRouting:
+        traefik: {}
+      steps:
+        - setWeight: 20
+        - pause: { duration: 30s }
+        - setWeight: 50
+        - pause: { duration: 30s }
+        - setWeight: 100
   selector:
     matchLabels:
-      app: "frontend"
+      app: frontend
   template:
     metadata:
       labels:
-        app: "frontend"
+        app: frontend
     spec:
       containers:
         - name: frontend

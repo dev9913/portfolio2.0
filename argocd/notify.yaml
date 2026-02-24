@@ -3,40 +3,34 @@ kind: ConfigMap
 metadata:
   name: argocd-notifications-cm
   namespace: argocd
-  labels:
-    app.kubernetes.io/name: argocd-notifications
 data:
   service.email: |
     email:
       host: smtp.gmail.com
       port: 587
-      username: $email-username
-      password: $email-password
-      from: $email-username
+      username: $argocd_notifications_secret_email_username
+      password: $argocd_notifications_secret_email_password
+      from: devjangig@gmail.com
       tls: true
 
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-notifications-templates
   namespace: argocd
-  labels:
-    app.kubernetes.io/name: argocd-notifications
 data:
-
   template.email-outofsync: |
     email:
       subject: "[ArgoCD] {{.app.metadata.name}} is OUT OF SYNC ⚠️"
-      message: |
+      body: |
         Application: {{.app.metadata.name}}
         Namespace: {{.app.metadata.namespace}}
         Sync Status: {{.app.status.sync.status}}
         Desired Revision: {{.app.status.sync.revision}}
         Health Status: {{.app.status.health.status}}
         Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
-  # Sync Failed Template
+
   template.sync-failed: |
     email:
       subject: "[ArgoCD] Sync Failed: {{.app.metadata.name}}"
@@ -49,7 +43,6 @@ data:
         <p><strong>Revision:</strong> {{.app.status.sync.revision}}</p>
         <p><a href="{{.context.rawURL}}/applications/{{.app.metadata.name}}">View in ArgoCD</a></p>
 
-  # Sync Succeeded Template
   template.sync-succeeded: |
     email:
       subject: "[ArgoCD] Sync Succeeded: {{.app.metadata.name}}"
@@ -60,7 +53,6 @@ data:
         <p><strong>Successfully synced to revision:</strong> {{.app.status.sync.revision}}</p>
         <p><a href="{{.context.rawURL}}/applications/{{.app.metadata.name}}">View in ArgoCD</a></p>
 
-  # Health Degraded Template
   template.health-degraded: |
     email:
       subject: "[ArgoCD] Health Degraded: {{.app.metadata.name}}"
@@ -71,7 +63,6 @@ data:
         <p><strong>Message:</strong> {{.app.status.health.message}}</p>
         <p><a href="{{.context.rawURL}}/applications/{{.app.metadata.name}}">View in ArgoCD</a></p>
 
-  # Application Deleted Template
   template.app-deleted: |
     email:
       subject: "[ArgoCD] Application Deleted: {{.app.metadata.name}}"
@@ -81,7 +72,6 @@ data:
         <p><strong>Name:</strong> {{.app.metadata.name}}</p>
         <p><strong>Namespace:</strong> {{.app.metadata.namespace}}</p>
 
-  # Sync Started Template
   template.sync-started: |
     email:
       subject: "[ArgoCD] Sync Started: {{.app.metadata.name}}"
@@ -93,44 +83,36 @@ data:
         <p><a href="{{.context.rawURL}}/applications/{{.app.metadata.name}}">View in ArgoCD</a></p>
 
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-notifications-triggers
   namespace: argocd
-  labels:
-    app.kubernetes.io/name: argocd-notifications
 data:
   trigger.on-outofsync: |
     - when: app.status.sync.status == 'OutOfSync'
       send: [email-outofsync]
-  # Trigger: Sync Failed
+
   trigger.sync-failed: |
     - when: app.status.sync.status == 'Failed'
       send: [sync-failed]
 
-  # Trigger: Sync Succeeded
   trigger.sync-succeeded: |
     - when: app.status.sync.status == 'Succeeded'
       send: [sync-succeeded]
 
-  # Trigger: Sync Started
   trigger.sync-started: |
     - when: app.status.sync.status == 'Running'
       send: [sync-started]
 
-  # Trigger: Health Degraded
   trigger.health-degraded: |
     - when: app.status.health.status == 'Degraded'
       send: [health-degraded]
 
-  # Trigger: Health Healthy
   trigger.health-healthy: |
     - when: app.status.health.status == 'Healthy'
       send: [sync-succeeded]
 
-  # Trigger: Application Deleted
-  trigger.on-sync-deleted: |
+  trigger.on-app-deleted: |
     - when: app.metadata.deletionTimestamp != nil
       send: [app-deleted]

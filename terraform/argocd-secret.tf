@@ -26,19 +26,19 @@ resource "kubernetes_secret_v1" "argocd_app_secret" {
 // Argocd Notification Secret
 resource "kubernetes_secret_v1" "argocd_notifications" {
   depends_on = [kubernetes_namespace_v1.argocd_ns]
+
   metadata {
     name      = "argocd-notifications-secret"
     namespace = "argocd"
   }
 
-  data = {
+  string_data = {
     email-username = var.gmail_username
     email-password = var.gmail_app_password
   }
 
   type = "Opaque"
 
-  
   lifecycle {
     # Prevent accidental deletion of secret
     prevent_destroy = true
