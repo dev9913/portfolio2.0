@@ -4,17 +4,13 @@ metadata:
   name: argocd-notifications-cm
   namespace: argocd
 data:
-  # Service Configuration
   service.email: |
-    email:
-      host: smtp.gmail.com
-      port: 587
-      username: $email-username        
-      password: $email-password         
-      from: devjangig@gmail.com
-      tls: true
-
-  # Templates
+    username: $email-username     
+    password: $email-password      
+    host: smtp.gmail.com            
+    port: 465                        
+    from: $email-username             
+ # Templates
   template.email-outofsync: |
     email:
       subject: "[ArgoCD] {{.app.metadata.name}} is OUT OF SYNC ⚠️"

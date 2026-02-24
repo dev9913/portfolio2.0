@@ -1,6 +1,9 @@
 prometheus:
   prometheusSpec:
-    serviceMonitorSelector: {}
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector:
+      matchLabels:
+        release: kube-prometheus-stack
     serviceMonitorNamespaceSelector:
       any: true
 
