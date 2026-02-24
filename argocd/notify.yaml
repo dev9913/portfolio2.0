@@ -8,8 +8,8 @@ data:
     email:
       host: smtp.gmail.com
       port: 587
-      username: $argocd_notifications_secret_email_username
-      password: $argocd_notifications_secret_email_password
+      username: $email-username        
+      password: $email-password         
       from: devjangig@gmail.com
       tls: true
 

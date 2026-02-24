@@ -15,7 +15,7 @@ spec:
         path: "/"
         backend:
           service:
-            name: frontend-stable
+            name: frontend-svc
             port: 
               number: 80
 
