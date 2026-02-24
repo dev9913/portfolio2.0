@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host:  'portfolio.local'
+  - host:  'devopscloud.me'
     http:
       paths:
       - pathType: Prefix

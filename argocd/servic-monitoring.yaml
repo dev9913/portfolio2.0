@@ -1,39 +1,30 @@
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+apiVersion: v1
+kind: Service
 metadata:
-  name: argocd-server
-  namespace: monitoring
+  name: argocd-server-metrics
+  namespace: argocd
   labels:
-    release: kube-prometheus-stack
+    app.kubernetes.io/name: argocd-server-metrics
 spec:
-  namespaceSelector:
-    matchNames:
-      - argocd
+  ports:
+    - name: http-metrics
+      port: 8082
+      targetPort: 8082
   selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-server-metrics
-  endpoints:
-    - port: http-metrics
-      interval: 30s
-
+    app.kubernetes.io/name: argocd-server
 ---
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+apiVersion: v1
+kind: Service
 metadata:
-  name: argocd-application-controller
-  namespace: monitoring
+  name: argocd-metrics
+  namespace: argocd
   labels:
-    release: kube-prometheus-stack
+    app.kubernetes.io/name: argocd-metrics
+    app.kubernetes.io/component: application-controller
 spec:
-  namespaceSelector:
-    matchNames:
-      - argocd
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-metrics
-      app.kubernetes.io/component: application-controller
-  endpoints:
-    - port: http-metrics
-      interval: 30s
-
-      
+    ports:
+    - name: http-metrics
+      port: 8082
+      targetPort: 8082
+    selector:
+        app.kubernetes.io/name: argocd-application-controller

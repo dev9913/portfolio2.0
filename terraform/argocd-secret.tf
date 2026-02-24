@@ -37,7 +37,7 @@ resource "kubernetes_secret_v1" "argocd_notifications" {
 
   data = {
     # Values must be base64 encoded
-    email-username = base64encode(var.gmail_username)
-    email-password = base64encode(var.gmail_app_password)
+    email-username =var.gmail_username
+    email-password =var.gmail_app_password
   }
 }
