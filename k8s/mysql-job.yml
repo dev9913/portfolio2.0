@@ -41,7 +41,7 @@ spec:
         - name: mysql-init
           image: mysql:5.7
           env:
-            - name: DB_HOST
+            - name: DB_HOST 
               valueFrom:
                 configMapKeyRef:
                   name: db-config
@@ -70,16 +70,14 @@ spec:
                 secretKeyRef:
                   name: portfolio-secret
                   key: DB_PASSWORD
-
           volumeMounts:
             - name: init-sql
               mountPath: /sql
-
           command:
             - sh
             - -c
             - |
-              echo "Waiting for MySQL..."
+              echo "Waiting for MySQL to be ready..."
               until mysql -h "$DB_HOST" -uroot -p"$ROOT_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; do
                 sleep 2
               done

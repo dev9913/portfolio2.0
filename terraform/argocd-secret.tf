@@ -23,9 +23,11 @@ resource "kubernetes_secret_v1" "argocd_app_secret" {
   type = "Opaque"
 }
 
+
 // Argocd Notification Secret
 resource "kubernetes_secret_v1" "argocd_notifications" {
   depends_on = [kubernetes_namespace_v1.argocd_ns]
+  
   metadata {
     name      = "argocd-notifications-secret"
     namespace = "argocd"
@@ -34,7 +36,8 @@ resource "kubernetes_secret_v1" "argocd_notifications" {
   type = "Opaque"
 
   data = {
-    email-username = base64encode("your-email@example.com")
-    email-password = base64encode("your-smtp-password")
+    # Values must be base64 encoded
+    email-username = base64encode(var.gmail_username)
+    email-password = base64encode(var.gmail_app_password)
   }
 }

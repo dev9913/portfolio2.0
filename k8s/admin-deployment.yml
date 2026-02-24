@@ -40,13 +40,11 @@ spec:
                 secretKeyRef:
                   name: portfolio-secret
                   key: DB_PASSWORD
-
-            - name: ADMIN_PASSWORD # Admin Password 
+            - name: ADMIN_PASSWORD # DB USER PASS
               valueFrom:
                 secretKeyRef:
                   name: portfolio-secret
-                  key: DB_PASSWORD
-                       
+                  key: DB_PASSWORD        
           ports:
             - containerPort: 5001
                
