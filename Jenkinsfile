@@ -183,31 +183,31 @@ pipeline {
             }
         }
         
-        stage("Terraform Plan") {
-            steps {
-                dir("${WORKSPACE}/terraform") {
-                    withCredentials([
-                        string(credentialsId: 'app_password', variable: 'APP_PASSWORD'),
-                        string(credentialsId: 'db_root_password', variable: 'DB_ROOT_PASSWORD'),
-                        string(credentialsId: 'USER_EMAIL', variable: 'USER_EMAIL'),
-                        string(credentialsId: 'USER_EMAIL_PASSWORD', variable: 'USER_EMAIL_PASSWORD')
-                    ]) {
-                        sh '''
-                            echo "Creating temporary tfvars file..."
-                            cat <<EOF > jenkins.tfvars
-        app_password = "${APP_PASSWORD}"
-        db_root_password = "${DB_ROOT_PASSWORD}"
-        user_email = "${USER_EMAIL}"
-        user_email_password = "${USER_EMAIL_PASSWORD}"
-        EOF
-        
-                            echo "Running Terraform Plan..."
-                            terraform plan -var-file=jenkins.tfvars
-                        '''
-                    }
-                }
+ stage("Terraform Plan") {
+    steps {
+        dir("${WORKSPACE}/terraform") {
+            withCredentials([
+                string(credentialsId: 'app_password', variable: 'APP_PASSWORD'),
+                string(credentialsId: 'db_root_password', variable: 'DB_ROOT_PASSWORD'),
+                string(credentialsId: 'USER_EMAIL', variable: 'USER_EMAIL'),
+                string(credentialsId: 'USER_EMAIL_PASSWORD', variable: 'USER_EMAIL_PASSWORD')
+            ]) {
+                sh '''
+echo "Creating temporary tfvars file..."
+cat <<EOF > jenkins.tfvars
+app_password = "${APP_PASSWORD}"
+db_root_password = "${DB_ROOT_PASSWORD}"
+user_email = "${USER_EMAIL}"
+user_email_password = "${USER_EMAIL_PASSWORD}"
+EOF
+
+echo "Running Terraform Plan..."
+terraform plan -var-file=jenkins.tfvars
+                '''
             }
         }
+    }
+}
         
         stage("Terraform Apply") {
             steps {
