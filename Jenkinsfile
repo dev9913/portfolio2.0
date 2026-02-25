@@ -158,54 +158,41 @@ pipeline {
         
         
         /* ================= Terraform ================= */
-
-        stage("Terraform Init"){
-            steps{
-                dir('terraform'){
-                    sh ' terraform init '
-                }
-            }    
-        }
-
-        stage("Terraform Validate"){
-            steps{
-                dir('terraform'){
-                    sh ' terraform validate '
-                }
-            }    
-        }
-
-        stage('Terraform Plan') {
-            steps {
+        
+         stage('Terraform') {
+    	    steps {
                 dir('terraform') {
-                    withCredentials([
-                        
-                        string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
-                        string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
-                        string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
-                        string(credentialsId: 'user_email_password', variable: 'TF_VAR_user_email_password')
-                    ]) {
-                        sh 'terraform plan -out=tfplan'
+                   withCredentials([
+                   string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
+                   string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
+                   string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
+                   string(credentialsId: 'user_email_password', variable: 'TF_VAR_user_email_password')
+                 ]) {
+                    sh '''
+                    	set -e
+                    	echo "Current directory:"
+                    	pwd
+                    	echo "Terraform files:"
+                    	ls -la
+                    	terraform version
+
+                    	terraform init -input=false
+                    	terraform validate
+                    	terraform plan -out=tfplan
+
+                    	if [ -f tfplan ]; then
+                           terraform apply -auto-approve tfplan
+                    	else
+                           echo "ERROR: tfplan not created"
+                        exit 1
+                    	fi
+                  
+                     '''
                     }
                 }
             }
-        }
-
-        stage('Terraform Apply') {
-            steps {
-                dir('terraform') {
-                    withCredentials([
-                        
-                        string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
-                        string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
-                        string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
-                        string(credentialsId: 'user_email_password', variable: 'TF_VAR_user_email_password')
-                    ]) {
-                        sh 'terraform apply -auto-approve tfplan'
-                    }
-                }
-            }
-        }
+         } 
+              
 
         /* ================= Stop Pipeline ================= */
 
