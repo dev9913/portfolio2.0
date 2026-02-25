@@ -18,7 +18,7 @@ spec:
           image: dev7878/portfolio-backend:3.0.0
           imagePullPolicy: Always
           env:
-            - name: DB_HOST   # HOST 
+            - name: DB_HOST # HOST 
               valueFrom:
                 configMapKeyRef:
                   name: db-config
@@ -28,13 +28,11 @@ spec:
                 configMapKeyRef:
                   name: db-config
                   key: DB_NAME
-
-            - name: DB_USER  # DB USER 
+            - name: DB_USER # DB USER 
               valueFrom:
                 secretKeyRef:
                   name: portfolio-secret
                   key: DB_USER
-
             - name: DB_PASSWORD # DB USER PASS
               valueFrom:
                 secretKeyRef:
