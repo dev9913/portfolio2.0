@@ -159,7 +159,6 @@ pipeline {
         
         /* ================= Terraform ================= */
 
-        /* ================= Terraform ================= */
 
         stage("Terraform Init") {
             steps {
@@ -174,7 +173,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage("Terraform Validate") {
             steps {
                 dir("${WORKSPACE}/terraform") {
@@ -185,28 +184,28 @@ pipeline {
                 }
             }
         }
-        
-        stage('Terraform Plan') {
+
+        stage("Terraform Plan") {
             steps {
                 dir("${WORKSPACE}/terraform") {
                     withCredentials([
                         string(credentialsId: 'app_password', variable: 'APP_PASSWORD'),
                         string(credentialsId: 'db_root_password', variable: 'DB_ROOT_PASSWORD'),
-                        string(credentialsId: 'user_email', variable: 'USER_EMAIL'),
-                        string(credentialsId: 'user_email_password', variable: 'USER_EMAIL_PASSWORD')
+                        string(credentialsId: 'USER_EMAIL', variable: 'USER_EMAIL'),
+                        string(credentialsId: 'USER_EMAIL_PASSWORD', variable: 'USER_EMAIL_PASSWORD')
                     ]) {
                         sh '''
-                            echo "Creating temporary tfvars file for secrets..."
+                            echo "Creating temporary tfvars file..."
                             cat <<EOF > jenkins.tfvars
         app_password = "${APP_PASSWORD}"
         db_root_password = "${DB_ROOT_PASSWORD}"
         user_email = "${USER_EMAIL}"
         user_email_password = "${USER_EMAIL_PASSWORD}"
         EOF
-        
-                            echo "Running Terraform plan..."
+
+                            echo "Running Terraform Plan..."
                             terraform plan -var-file=jenkins.tfvars -out=tfplan
-        
+
                             if [ ! -f tfplan ]; then
                                 echo "ERROR: tfplan not created"
                                 exit 1
@@ -216,27 +215,27 @@ pipeline {
                 }
             }
         }
-        
-        stage('Terraform Apply') {
+
+        stage("Terraform Apply") {
             steps {
                 dir("${WORKSPACE}/terraform") {
                     withCredentials([
                         string(credentialsId: 'app_password', variable: 'APP_PASSWORD'),
                         string(credentialsId: 'db_root_password', variable: 'DB_ROOT_PASSWORD'),
-                        string(credentialsId: 'user_email', variable: 'USER_EMAIL'),
-                        string(credentialsId: 'user_email_password', variable: 'USER_EMAIL_PASSWORD')
+                        string(credentialsId: 'USER_EMAIL', variable: 'USER_EMAIL'),
+                        string(credentialsId: 'USER_EMAIL_PASSWORD', variable: 'USER_EMAIL_PASSWORD')
                     ]) {
                         sh '''
                             echo "Applying Terraform plan..."
                             terraform apply -var-file=jenkins.tfvars -auto-approve tfplan
-        
+
                             # Optional: clean up sensitive tfvars file
                             rm -f jenkins.tfvars
                         '''
                     }
                 }
             }
-        }
+        }      
              
         /* ================= Stop Pipeline ================= */
 
