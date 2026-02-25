@@ -109,7 +109,7 @@ The `Jenkinsfile` orchestrates the CI/CD process:
 6. **Notifications**: Pipeline status via email .
 
 
-
+---
 ## This project demonstrates end-to-end DevOps automation and is an excellent portfolio showcase .
 
  
