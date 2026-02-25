@@ -179,7 +179,7 @@ pipeline {
             steps {
                 dir('terraform') {
                     withCredentials([
-                        string(credentialsId: 'vault_bootstrap_token', variable: 'TF_VAR_vault_bootstrap_token'),
+                        
                         string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
                         string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
                         string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
@@ -195,7 +195,7 @@ pipeline {
             steps {
                 dir('terraform') {
                     withCredentials([
-                        string(credentialsId: 'vault_bootstrap_token', variable: 'TF_VAR_vault_bootstrap_token'),
+                        
                         string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
                         string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
                         string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
