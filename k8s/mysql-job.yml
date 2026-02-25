@@ -29,10 +29,10 @@ metadata:
   name: mysql-init-job
   namespace: portfolio
   annotations:
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "2"
 spec:
-  backoffLimit: 3
+  backoffLimit: 5
+  ttlSecondsAfterFinished: 600  
   template:
     spec:
       restartPolicy: OnFailure
