@@ -158,8 +158,6 @@ pipeline {
         
         
         /* ================= Terraform ================= */
-
-
         stage("Terraform Init") {
             steps {
                 dir("${WORKSPACE}/terraform") {
@@ -173,7 +171,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage("Terraform Validate") {
             steps {
                 dir("${WORKSPACE}/terraform") {
@@ -184,7 +182,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage("Terraform Plan") {
             steps {
                 dir("${WORKSPACE}/terraform") {
@@ -202,20 +200,15 @@ pipeline {
         user_email = "${USER_EMAIL}"
         user_email_password = "${USER_EMAIL_PASSWORD}"
         EOF
-
+        
                             echo "Running Terraform Plan..."
-                            terraform plan -var-file=jenkins.tfvars -out=tfplan
-
-                            if [ ! -f tfplan ]; then
-                                echo "ERROR: tfplan not created"
-                                exit 1
-                            fi
+                            terraform plan -var-file=jenkins.tfvars
                         '''
                     }
                 }
             }
         }
-
+        
         stage("Terraform Apply") {
             steps {
                 dir("${WORKSPACE}/terraform") {
@@ -226,17 +219,16 @@ pipeline {
                         string(credentialsId: 'USER_EMAIL_PASSWORD', variable: 'USER_EMAIL_PASSWORD')
                     ]) {
                         sh '''
-                            echo "Applying Terraform plan..."
-                            terraform apply -var-file=jenkins.tfvars -auto-approve tfplan
-
-                            # Optional: clean up sensitive tfvars file
+                            echo "Applying Terraform..."
+                            terraform apply -var-file=jenkins.tfvars -auto-approve
+        
                             rm -f jenkins.tfvars
                         '''
                     }
                 }
             }
-        }      
-             
+        }
+        
         /* ================= Stop Pipeline ================= */
 
 
