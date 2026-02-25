@@ -176,12 +176,12 @@ pipeline {
                     	ls -la
                     	terraform version
 
-                    	terraform init -input=false
+                    	terraform init 
                     	terraform validate
-                    	terraform plan -out=tfplan
+                    	terraform plan 
 
                     	if [ -f tfplan ]; then
-                           terraform apply -auto-approve tfplan
+                           terraform apply -auto-approve 
                     	else
                            echo "ERROR: tfplan not created"
                         exit 1
