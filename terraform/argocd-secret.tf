@@ -36,8 +36,8 @@ resource "kubernetes_secret_v1" "argocd_notifications" {
   type = "Opaque"
 
   data = {
-    email-username =var.gmail_username
-    email-password =var.gmail_app_password
+    email-username =var.user_email
+    email-password =var.user_email_password
   }
 
 }

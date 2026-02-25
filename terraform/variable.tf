@@ -24,13 +24,13 @@ variable "enable_argocd_metrics" {
   default     = true
 }
 
-variable "gmail_username" {
+variable "user_email" {
   description = "Gmail address for sending notifications"
   type        = string
   sensitive   = true
 }
 
-variable "gmail_app_password" {
+variable "user_email_password" {
   description = "Gmail App Password for SMTP authentication"
   type        = string
   sensitive   = true
