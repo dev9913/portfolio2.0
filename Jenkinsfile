@@ -159,9 +159,11 @@ pipeline {
         
         /* ================= Terraform ================= */
 
+        /* ================= Terraform ================= */
+
         stage("Terraform Init") {
             steps {
-                dir("${WORKSPACE}/portfolio2.0/terraform") {
+                dir("${WORKSPACE}/terraform") {
                     sh '''
                         echo "Initializing Terraform..."
                         pwd
@@ -172,9 +174,10 @@ pipeline {
                 }
             }
         }
+        
         stage("Terraform Validate") {
             steps {
-                dir("${WORKSPACE}/portfolio2.0/terraform") {
+                dir("${WORKSPACE}/terraform") {
                     sh '''
                         echo "Validating Terraform files..."
                         terraform validate
@@ -182,18 +185,28 @@ pipeline {
                 }
             }
         }
+        
         stage('Terraform Plan') {
             steps {
-                dir("${WORKSPACE}/portfolio2.0/terraform") {
+                dir("${WORKSPACE}/terraform") {
                     withCredentials([
-                        string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
-                        string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
-                        string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
-                        string(credentialsId: 'user_email_password', variable: 'TF_VAR_user_email_password')
+                        string(credentialsId: 'app_password', variable: 'APP_PASSWORD'),
+                        string(credentialsId: 'db_root_password', variable: 'DB_ROOT_PASSWORD'),
+                        string(credentialsId: 'user_email', variable: 'USER_EMAIL'),
+                        string(credentialsId: 'user_email_password', variable: 'USER_EMAIL_PASSWORD')
                     ]) {
                         sh '''
-                            echo "Planning Terraform..."
-                            terraform plan -out=tfplan
+                            echo "Creating temporary tfvars file for secrets..."
+                            cat <<EOF > jenkins.tfvars
+        app_password = "${APP_PASSWORD}"
+        db_root_password = "${DB_ROOT_PASSWORD}"
+        user_email = "${USER_EMAIL}"
+        user_email_password = "${USER_EMAIL_PASSWORD}"
+        EOF
+        
+                            echo "Running Terraform plan..."
+                            terraform plan -var-file=jenkins.tfvars -out=tfplan
+        
                             if [ ! -f tfplan ]; then
                                 echo "ERROR: tfplan not created"
                                 exit 1
@@ -203,23 +216,27 @@ pipeline {
                 }
             }
         }
+        
         stage('Terraform Apply') {
             steps {
-                dir("${WORKSPACE}/portfolio2.0/terraform") {
+                dir("${WORKSPACE}/terraform") {
                     withCredentials([
-                        string(credentialsId: 'app_password', variable: 'TF_VAR_app_password'),
-                        string(credentialsId: 'db_root_password', variable: 'TF_VAR_db_root_password'),
-                        string(credentialsId: 'user_email', variable: 'TF_VAR_user_email'),
-                        string(credentialsId: 'user_email_password', variable: 'TF_VAR_user_email_password')
+                        string(credentialsId: 'app_password', variable: 'APP_PASSWORD'),
+                        string(credentialsId: 'db_root_password', variable: 'DB_ROOT_PASSWORD'),
+                        string(credentialsId: 'user_email', variable: 'USER_EMAIL'),
+                        string(credentialsId: 'user_email_password', variable: 'USER_EMAIL_PASSWORD')
                     ]) {
                         sh '''
-                            echo "Applying Terraform..."
-                            terraform apply -auto-approve tfplan
+                            echo "Applying Terraform plan..."
+                            terraform apply -var-file=jenkins.tfvars -auto-approve tfplan
+        
+                            # Optional: clean up sensitive tfvars file
+                            rm -f jenkins.tfvars
                         '''
                     }
                 }
             }
-        } 
+        }
              
         /* ================= Stop Pipeline ================= */
 
