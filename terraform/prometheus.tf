@@ -22,7 +22,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
 // Deploy Argocd Service
 resource "kubectl_manifest" "argocd_svc" {
-  yaml_body = file("${path.module}./argocd/servic-monitoring.yaml")
- depends_on = [helm_release.argocd ,helm_release.kube_prometheus_stack ]
+  yaml_body = file("${path.module}./argocd/service-monitoring.yaml")
+ depends_on = [helm_release.argocd]
 }
 

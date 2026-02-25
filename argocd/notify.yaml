@@ -4,6 +4,9 @@ metadata:
   name: argocd-notifications-cm
   namespace: argocd
 data:
+  context: |
+    argocdUrl: "http://<argocd-server-url>:8080"
+
   service.email: |
     username: $email-username     
     password: $email-password      
@@ -13,7 +16,7 @@ data:
  # Templates
   template.email-outofsync: |
     email:
-      subject: "[ArgoCD] {{.app.metadata.name}} is OUT OF SYNC ⚠️"
+      subject: "⚠️ Hello Dev [ArgoCD] {{.app.metadata.name}} is OUT OF SYNC "
       body: |
         Application: {{.app.metadata.name}}
         Namespace: {{.app.metadata.namespace}}
@@ -24,7 +27,7 @@ data:
 
   template.sync-failed: |
     email:
-      subject: "[ArgoCD] Sync Failed: {{.app.metadata.name}}"
+      subject: "🚨 Hello Dev [ArgoCD] Sync Failed: {{.app.metadata.name}}"
       body: |
         <h3>Sync Failed Notification</h3>
         <p><strong>Application:</strong> {{.app.metadata.name}}</p>
@@ -36,7 +39,7 @@ data:
 
   template.sync-succeeded: |
     email:
-      subject: "[ArgoCD] Sync Succeeded: {{.app.metadata.name}}"
+      subject: "☠️ Hello Dev [ArgoCD] Sync Succeeded: {{.app.metadata.name}}"
       body: |
         <h3>Sync Succeeded Notification</h3>
         <p><strong>Application:</strong> {{.app.metadata.name}}</p>
@@ -46,7 +49,7 @@ data:
 
   template.health-degraded: |
     email:
-      subject: "[ArgoCD] Health Degraded: {{.app.metadata.name}}"
+      subject: "⚠️ Hello Dev [ArgoCD] Health Degraded: {{.app.metadata.name}}"
       body: |
         <h3>Health Degraded Notification</h3>
         <p><strong>Application:</strong> {{.app.metadata.name}}</p>
@@ -56,7 +59,7 @@ data:
 
   template.app-deleted: |
     email:
-      subject: "[ArgoCD] Application Deleted: {{.app.metadata.name}}"
+      subject: "😞 Hello Dev [ArgoCD] Application Deleted: {{.app.metadata.name}}"
       body: |
         <h3>Application Deleted</h3>
         <p>The following ArgoCD application was deleted:</p>
@@ -65,7 +68,7 @@ data:
 
   template.sync-started: |
     email:
-      subject: "[ArgoCD] Sync Started: {{.app.metadata.name}}"
+      subject: "✅ Hello Dev [ArgoCD] Sync Started: {{.app.metadata.name}}"
       body: |
         <h3>Sync Started Notification</h3>
         <p><strong>Application:</strong> {{.app.metadata.name}}</p>

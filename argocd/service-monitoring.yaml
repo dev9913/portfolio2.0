@@ -13,7 +13,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: argocd-server-metrics
   endpoints:
-    - port: http-metrics   # matches the Service port name
+    - port: http-metrics  
       path: /metrics
       interval: 30s
 
@@ -97,6 +97,6 @@ spec:
       app.kubernetes.io/name: argocd-repo-server-metrics
       app.kubernetes.io/component: repo-server
   endpoints:
-    - port: http-metrics   # must match service port name
+    - port: http-metrics   
       interval: 30s
 
